@@ -111,7 +111,7 @@ if st.session_state.add_company_clicked:
                 if full_ticker in existing_tickers:
                     st.error(f"Company with ticker '{full_ticker}' already exists!")
                 else:
-                    # Verify that the ticker is valid by trying to get the price
+                    # Verify that the ticker is valid by trying to get the prices
                     test_price = get_current_stock_price(full_ticker)
                     if test_price is not None:
                         new_company = {
