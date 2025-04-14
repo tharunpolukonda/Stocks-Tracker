@@ -9,6 +9,132 @@ from datetime import timedelta
 # Set page title and configuration
 st.set_page_config(page_title="Sector-based Stock Tracker", layout="wide")
 
+# Custom CSS for blue and white theme
+st.markdown("""
+    <style>
+    /* Main background */
+    .stApp {
+        background-color: #F5F8FF;
+        color: #1E3A8A;
+    }
+    
+    /* Headers */
+    h1, h2, h3, h4, h5, h6 {
+        color: #1E3A8A;
+    }
+    
+    /* Buttons */
+    .stButton>button {
+        background-color: #3B82F6;
+        color: white;
+        border: none;
+        border-radius: 5px;
+    }
+    .stButton>button:hover {
+        background-color: #2563EB;
+        color: white;
+    }
+    .stButton>button:focus {
+        background-color: #1E40AF;
+        color: white;
+    }
+    
+    /* Primary button (View Mode, High Return when active) */
+    .stButton>button[kind="primary"] {
+        background-color: #1E40AF;
+        color: white;
+    }
+    .stButton>button[kind="primary"]:hover {
+        background-color: #1E3A8A;
+        color: white;
+    }
+    
+    /* Form labels */
+    .stForm label, .stTextInput label, .stNumberInput label, 
+    .stDateInput label, .stSelectbox label {
+        color: #1E3A8A !important;
+    }
+    
+    /* Text inputs and select boxes */
+    .stTextInput>div>input,
+    .stNumberInput>div>input,
+    .stDateInput>div>input,
+    .stSelectbox>div>div>select {
+        background-color: white;
+        color: #1E3A8A;
+        border: 1px solid #93C5FD;
+        border-radius: 5px;
+    }
+    
+    /* Dataframe styling */
+    .stDataFrame {
+        width: 100%;
+    }
+    .stDataFrame table {
+        background-color: white;
+        color: #1E3A8A;
+        border: 1px solid #93C5FD;
+        border-collapse: collapse;
+    }
+    .stDataFrame th {
+        background-color: #3B82F6;
+        color: white;
+        border: 1px solid #93C5FD;
+        padding: 8px;
+    }
+    .stDataFrame td {
+        background-color: white;
+        color: #1E3A8A;
+        border: 1px solid #93C5FD;
+        padding: 8px;
+    }
+    
+    /* Sidebar */
+    .css-1d391kg {
+        background-color: #EFF6FF;
+    }
+    .css-1d391kg .stMarkdown,
+    .css-1d391kg .stInfo,
+    .css-1d391kg .stError,
+    .css-1d391kg .stSuccess {
+        color: #1E3A8A;
+    }
+    
+    /* Info, Warning, Error, Success messages */
+    .stInfo, .stWarning, .stError, .stSuccess {
+        background-color: white;
+        color: #1E3A8A;
+        border: 1px solid #93C5FD;
+    }
+    
+    /* Metrics */
+    .stMetric {
+        background-color: white;
+        color: #1E3A8A;
+        border: 1px solid #93C5FD;
+        border-radius: 5px;
+    }
+    
+    /* Expander */
+    .streamlit-expander {
+        background-color: white;
+        color: #1E3A8A;
+        border: 1px solid #93C5FD;
+        border-radius: 5px;
+    }
+    
+    /* Horizontal line */
+    hr {
+        border-color: #93C5FD;
+    }
+    
+    /* Markdown text */
+    .stMarkdown {
+        color: #1E3A8A;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
 # Define functions for data management
 def save_data(data):
     """Save data to a JSON file"""
@@ -41,21 +167,17 @@ def get_today_return(ticker_symbol):
     """Calculate today's return percentage for a stock"""
     try:
         stock = yf.Ticker(ticker_symbol)
-        # Fetch the last 7 days of data to ensure we have enough history
         data = stock.history(period="7d", interval="1d")
         
         if len(data) < 2:
             return None, "Not enough data"
             
-        # Get the latest two trading days
         yesterday_close = data["Close"].iloc[-2]
         today_close = data["Close"].iloc[-1]
         
-        # Calculate return percentage
         return_pct = ((today_close - yesterday_close) / yesterday_close) * 100
         return_value = round(return_pct, 2)
         
-        # Get the dates for display
         today_date = data.index[-1].strftime("%Y-%m-%d")
         yesterday_date = data.index[-2].strftime("%Y-%m-%d")
         
@@ -97,24 +219,42 @@ if 'selected_sector_for_view' not in st.session_state:
 if 'show_high_return' not in st.session_state:
     st.session_state.show_high_return = False
 
+if 'high_return_sector' not in st.session_state:
+    st.session_state.high_return_sector = "All Sectors"
+
+if 'show_hx_cat' not in st.session_state:
+    st.session_state.show_hx_cat = False
+
+if 'show_invest_companies' not in st.session_state:
+    st.session_state.show_invest_companies = False
+
+if 'invest_companies_sector' not in st.session_state:
+    st.session_state.invest_companies_sector = "All Sectors"
+
 # Helper functions to toggle UI states
 def toggle_add_sector():
     st.session_state.add_sector_clicked = not st.session_state.add_sector_clicked
     st.session_state.add_company_clicked = False
     st.session_state.view_mode = False
     st.session_state.show_high_return = False
+    st.session_state.show_hx_cat = False
+    st.session_state.show_invest_companies = False
 
 def toggle_add_company():
     st.session_state.add_company_clicked = not st.session_state.add_company_clicked
     st.session_state.add_sector_clicked = False
     st.session_state.view_mode = False
     st.session_state.show_high_return = False
+    st.session_state.show_hx_cat = False
+    st.session_state.show_invest_companies = False
 
 def toggle_view_mode():
     st.session_state.view_mode = not st.session_state.view_mode
     st.session_state.add_sector_clicked = False
     st.session_state.add_company_clicked = False
     st.session_state.show_high_return = False
+    st.session_state.show_hx_cat = False
+    st.session_state.show_invest_companies = False
     if st.session_state.view_mode:
         st.session_state.selected_sector_for_view = None
 
@@ -123,32 +263,81 @@ def toggle_high_return():
     st.session_state.add_sector_clicked = False
     st.session_state.add_company_clicked = False
     st.session_state.view_mode = False
+    st.session_state.show_hx_cat = False
+    st.session_state.show_invest_companies = False
+    if st.session_state.show_high_return:
+        st.session_state.high_return_sector = "All Sectors"
+
+def toggle_hx_cat():
+    st.session_state.show_hx_cat = not st.session_state.show_hx_cat
+    st.session_state.add_sector_clicked = False
+    st.session_state.add_company_clicked = False
+    st.session_state.view_mode = False
+    st.session_state.show_high_return = False
+    st.session_state.show_invest_companies = False
+
+def toggle_invest_companies():
+    st.session_state.show_invest_companies = not st.session_state.show_invest_companies
+    st.session_state.add_sector_clicked = False
+    st.session_state.add_company_clicked = False
+    st.session_state.view_mode = False
+    st.session_state.show_high_return = False
+    st.session_state.show_hx_cat = False
+    if st.session_state.show_invest_companies:
+        st.session_state.invest_companies_sector = "All Sectors"
 
 def set_selected_sector(sector):
     st.session_state.selected_sector_for_view = sector
 
+def go_to_home():
+    st.session_state.add_sector_clicked = False
+    st.session_state.add_company_clicked = False
+    st.session_state.view_mode = False
+    st.session_state.show_high_return = False
+    st.session_state.show_hx_cat = False
+    st.session_state.show_invest_companies = False
+    st.session_state.selected_sector_for_view = None
+    st.rerun()
+
 # App title and description
-st.title("📈 Sector-based Stock Tracker")
+st.title("📈 HOOX Companywise Tracker & Analysis")
 st.markdown("Track stock prices organized by business sectors")
 
-# Action buttons in sidebar
-st.sidebar.header("Actions")
-col1, col2, col3, col4 = st.sidebar.columns(4)
+# Action buttons at the top
+st.markdown("### Actions")
+col1, col2, col3, col4, col5, col6, col7 = st.columns(7)
 with col1:
-    st.button("Add Sector", on_click=toggle_add_sector, key="add_sector_button")
+    if st.button("Home", key="home_button"):
+        go_to_home()
 with col2:
-    st.button("Add Company", on_click=toggle_add_company, key="add_company_button")
+    if st.button("Add Sector", key="add_sector_button"):
+        toggle_add_sector()
 with col3:
-    st.button("View Mode", on_click=toggle_view_mode, key="view_mode_button", 
-             type="primary" if st.session_state.view_mode else "secondary")
+    if st.button("Add Company", key="add_company_button"):
+        toggle_add_company()
 with col4:
-    st.button("High Return", on_click=toggle_high_return, key="high_return_button",
-             type="primary" if st.session_state.show_high_return else "secondary")
+    if st.button("View Sectors", key="view_mode_button", 
+                 type="primary" if st.session_state.view_mode else "secondary"):
+        toggle_view_mode()
+with col5:
+    if st.button("High Return", key="high_return_button",
+                 type="primary" if st.session_state.show_high_return else "secondary"):
+        toggle_high_return()
+with col6:
+    if st.button("Track-HX-CAT", key="hx_cat_button",
+                 type="primary" if st.session_state.show_hx_cat else "secondary"):
+        toggle_hx_cat()
+with col7:
+    if st.button("Track_Invest", key="invest_companies_button",
+                 type="primary" if st.session_state.show_invest_companies else "secondary"):
+        toggle_invest_companies()
+
+st.markdown("---")
 
 # Add Sector Form
 if st.session_state.add_sector_clicked:
-    st.sidebar.subheader("Add New Sector")
-    with st.sidebar.form("add_sector_form"):
+    st.subheader("Add New Sector")
+    with st.form("add_sector_form"):
         sector_name = st.text_input("Sector Name", placeholder="e.g. Technology")
         submit_sector = st.form_submit_button("Add Sector")
         
@@ -164,33 +353,36 @@ if st.session_state.add_sector_clicked:
 
 # Add Company Form
 if st.session_state.add_company_clicked:
-    st.sidebar.subheader("Add Company to Track")
+    st.subheader("Add Company to Track")
     
     if not st.session_state.data["sectors"]:
-        st.sidebar.warning("Please add at least one sector first!")
+        st.warning("Please add at least one sector first!")
     else:
-        with st.sidebar.form("add_company_form"):
+        with st.form("add_company_form"):
             company_name = st.text_input("Company Name", placeholder="e.g. Apple Inc.")
             ticker_code = st.text_input("Ticker Code", placeholder="e.g. AAPL")
             selected_sector = st.selectbox("Select Sector", st.session_state.data["sectors"])
             
-            buy_price = st.number_input("Buy Price", min_value=0.01, format="%.2f", 
+            buy_price = st.number_input("Buy Price", min_value=0.00, format="%.2f", 
                                        placeholder="Enter your purchase price")
-            shares = st.number_input("Number of Shares", min_value=1, step=1, 
+            shares = st.number_input("Number of Shares", min_value=0, step=1, 
                                     placeholder="Enter number of shares bought")
             
             purchase_date = st.date_input("Purchase Date", 
                                          value=datetime.date.today(),
                                          max_value=datetime.date.today())
             
-            suffix_options = [".NS", ".BO", "", ".L", ".DE"]
+            suffix_options = [".NS", ".BO", ""]
             suffix = st.selectbox("Exchange Suffix", suffix_options, 
                                   index=0, 
                                   help=".NS for NSE, .BO for BSE, blank for US markets")
             
+            move_to_hx = st.selectbox("Move to HX Category", ["No", "Yes"], 
+                                     help="Select Yes to tag as HX-CAT")
+            
             submit_company = st.form_submit_button("Add Company")
             
-            if submit_company and company_name and ticker_code and buy_price > 0 and shares > 0:
+            if submit_company and company_name and ticker_code and buy_price > 0:
                 full_ticker = f"{ticker_code}{suffix}"
                 
                 existing_tickers = [company["ticker"] for company in st.session_state.data["companies"]]
@@ -205,7 +397,8 @@ if st.session_state.add_company_clicked:
                             "sector": selected_sector,
                             "buy_price": float(buy_price),
                             "shares": int(shares),
-                            "purchase_date": purchase_date.strftime("%Y-%m-%d")
+                            "purchase_date": purchase_date.strftime("%Y-%m-%d"),
+                            "hx_cat": move_to_hx == "Yes"
                         }
                         st.session_state.data["companies"].append(new_company)
                         save_data(st.session_state.data)
@@ -215,7 +408,83 @@ if st.session_state.add_company_clicked:
                     else:
                         st.error(f"Could not fetch data for ticker '{full_ticker}'. Please verify the ticker code.")
             elif submit_company:
-                st.error("Please fill all fields with valid values.")
+                st.error("Please fill all required fields with valid values.")
+
+# HX-CAT Section
+if st.session_state.show_hx_cat:
+    st.header("HX-CAT Companies")
+    
+    if not st.session_state.data["companies"]:
+        st.info("No companies added yet. Click 'Add Company' to start tracking stocks.")
+    else:
+        data = []
+        for company in st.session_state.data["companies"]:
+            if company.get("hx_cat", False):
+                day_return, _ = get_today_return(company["ticker"])
+                if day_return is not None:
+                    data.append({
+                        "Company": company["name"],
+                        "Sector": company["sector"],
+                        "Day Change (%)": day_return
+                    })
+        
+        if not data:
+            st.info("No companies tagged as HX-CAT found.")
+        else:
+            df = pd.DataFrame(data)
+            df = df.sort_values(by="Day Change (%)", ascending=False)
+            df = df.reset_index(drop=True)
+            
+            st.subheader("HX-CAT Companies Ranked by Daily Return")
+            st.dataframe(df, use_container_width=True)
+
+# Invest Companies Section
+if st.session_state.show_invest_companies:
+    st.header("Invested Companies")
+    
+    if not st.session_state.data["companies"]:
+        st.info("No companies added yet. Click 'Add Company' to start tracking stocks.")
+    else:
+        sectors = ["All Sectors"] + st.session_state.data["sectors"]
+        sector_key = "invest_companies_sector_filter"
+        
+        selected_sector = st.selectbox(
+            "Filter by Sector",
+            sectors,
+            index=sectors.index(st.session_state.invest_companies_sector),
+            key=sector_key
+        )
+        
+        if selected_sector != st.session_state.invest_companies_sector:
+            st.session_state.invest_companies_sector = selected_sector
+        
+        data = []
+        for company in st.session_state.data["companies"]:
+            if company["shares"] > 0 and (selected_sector == "All Sectors" or company["sector"] == selected_sector):
+                day_return, _ = get_today_return(company["ticker"])
+                buy_price = company.get("buy_price", 0)
+                shares = company.get("shares", 0)
+                invested = buy_price * shares
+                currency_symbol = "₹" if company["ticker"].endswith(('.NS', '.BO')) else "$"
+                
+                company_data = {
+                    "Company": company["name"],
+                    "Sector": company["sector"],
+                    "Ticker": company["ticker"],
+                    "Purchase Date": company.get("purchase_date", "N/A"),
+                    "Buy Price": f"{currency_symbol}{buy_price:.2f}",
+                    "Shares": shares,
+                    "Invested": f"{currency_symbol}{invested:.2f}",
+                    "Day Change (%)": day_return if day_return is not None else "N/A"
+                }
+                data.append(company_data)
+        
+        if not data:
+            st.info(f"No invested companies found for {selected_sector}.")
+        else:
+            df = pd.DataFrame(data)
+            st.subheader(f"Invested Companies")
+            st.dataframe(df, use_container_width=True)
 
 # High Return Section
 if st.session_state.show_high_return:
@@ -224,16 +493,24 @@ if st.session_state.show_high_return:
     if not st.session_state.data["companies"]:
         st.info("No companies added yet. Click 'Add Company' to start tracking stocks.")
     else:
-        # Sector filter dropdown
         sectors = ["All Sectors"] + st.session_state.data["sectors"]
-        selected_sector = st.selectbox("Filter by Sector", sectors, key="high_return_sector_filter")
+        sector_key = "high_return_sector_filter"
         
-        # Collect data for companies
+        selected_sector = st.selectbox(
+            "Filter by Sector",
+            sectors,
+            index=sectors.index(st.session_state.high_return_sector),
+            key=sector_key
+        )
+        
+        if selected_sector != st.session_state.high_return_sector:
+            st.session_state.high_return_sector = selected_sector
+        
         data = []
         for company in st.session_state.data["companies"]:
             if selected_sector == "All Sectors" or company["sector"] == selected_sector:
                 day_return, _ = get_today_return(company["ticker"])
-                if day_return is not None:  # Only include companies with valid day return
+                if day_return is not None:
                     data.append({
                         "Company": company["name"],
                         "Sector": company["sector"],
@@ -243,14 +520,10 @@ if st.session_state.show_high_return:
         if not data:
             st.info(f"No companies with valid data found for {selected_sector}.")
         else:
-            # Create DataFrame and sort by Day Change in descending order
             df = pd.DataFrame(data)
             df = df.sort_values(by="Day Change (%)", ascending=False)
-            
-            # Reset index to make it clean
             df = df.reset_index(drop=True)
             
-            # Display the table
             st.subheader(f"Stocks Ranked by Daily Return")
             st.dataframe(df, use_container_width=True)
 
@@ -363,7 +636,7 @@ if st.session_state.view_mode:
                 st.dataframe(df, use_container_width=True)
 
 # Main content area - Display stocks by sector (when not in view mode or high return)
-if not st.session_state.view_mode and not st.session_state.show_high_return:
+if not st.session_state.view_mode and not st.session_state.show_high_return and not st.session_state.show_hx_cat and not st.session_state.show_invest_companies:
     st.header("Stocks by Sector")
 
     if st.session_state.data["companies"]:
