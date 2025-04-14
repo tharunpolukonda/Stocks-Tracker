@@ -9,50 +9,55 @@ from datetime import timedelta
 # Set page title and configuration
 st.set_page_config(page_title="Sector-based Stock Tracker", layout="wide")
 
-# Custom CSS for blue and white theme
+# Custom CSS for 3D UI with black background and blue-white accents
 st.markdown("""
     <style>
     /* Main background */
     .stApp {
-        background-color: #F5F8FF;
-        color: #1E3A8A;
+        background-color: #000000;
+        color: #FFFFFF;
     }
     
     /* Headers */
     h1, h2, h3, h4, h5, h6 {
-        color: #1E3A8A;
+        color: #3B82F6;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
     }
     
     /* Buttons */
     .stButton>button {
-        background-color: #3B82F6;
-        color: white;
+        background: linear-gradient(145deg, #3B82F6, #1E40AF);
+        color: #FFFFFF;
         border: none;
-        border-radius: 5px;
+        border-radius: 8px;
+        padding: 10px 20px;
+        box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.4), -3px -3px 6px rgba(255, 255, 255, 0.1);
+        transition: transform 0.2s;
     }
     .stButton>button:hover {
-        background-color: #2563EB;
-        color: white;
+        background: linear-gradient(145deg, #2563EB, #1E3A8A);
+        transform: translateY(-2px);
     }
     .stButton>button:focus {
-        background-color: #1E40AF;
-        color: white;
+        background: linear-gradient(145deg, #1E40AF, #1E3A8A);
+        box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.5);
     }
     
-    /* Primary button (View Mode, High Return when active) */
+    /* Primary button */
     .stButton>button[kind="primary"] {
-        background-color: #1E40AF;
-        color: white;
+        background: linear-gradient(145deg, #1E40AF, #1E3A8A);
+        color: #FFFFFF;
     }
     .stButton>button[kind="primary"]:hover {
-        background-color: #1E3A8A;
-        color: white;
+        background: linear-gradient(145deg, #2563EB, #1E40AF);
+        transform: translateY(-2px);
     }
     
     /* Form labels */
     .stForm label, .stTextInput label, .stNumberInput label, 
     .stDateInput label, .stSelectbox label {
-        color: #1E3A8A !important;
+        color: #3B82F6 !important;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
     }
     
     /* Text inputs and select boxes */
@@ -60,86 +65,113 @@ st.markdown("""
     .stNumberInput>div>input,
     .stDateInput>div>input,
     .stSelectbox>div>div>select {
-        background-color: white;
+        background: linear-gradient(145deg, #FFFFFF, #F5F8FF);
         color: #1E3A8A;
-        border: 1px solid #93C5FD;
-        border-radius: 5px;
+        border: 2px solid #3B82F6;
+        border-radius: 8px;
+        padding: 8px;
+        box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.2);
     }
     
     /* Dataframe styling */
     .stDataFrame {
         width: 100%;
+        background: #FFFFFF;
+        border-radius: 10px;
+        box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5), -5px -5px 10px rgba(255, 255, 255, 0.1);
     }
     .stDataFrame table {
-        background-color: white;
+        background: #FFFFFF;
         color: #1E3A8A;
-        border: 1px solid #93C5FD;
-        border-collapse: collapse;
+        border: 2px solid #3B82F6;
+        border-collapse: separate;
+        border-spacing: 0;
+        border-radius: 8px;
     }
     .stDataFrame th {
-        background-color: #3B82F6;
-        color: white;
-        border: 1px solid #93C5FD;
-        padding: 8px;
+        background: linear-gradient(145deg, #3B82F6, #1E40AF);
+        color: #FFFFFF;
+        border: 2px solid #3B82F6;
+        padding: 10px;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
     }
     .stDataFrame td {
-        background-color: white;
+        background: #FFFFFF;
         color: #1E3A8A;
-        border: 1px solid #93C5FD;
-        padding: 8px;
+        border: 2px solid #3B82F6;
+        padding: 10px;
     }
     
     /* Sidebar */
     .css-1d391kg {
-        background-color: #EFF6FF;
+        background: linear-gradient(145deg, #1E3A8A, #000000);
+        color: #FFFFFF;
+        border-right: 2px solid #3B82F6;
+        box-shadow: 5px 0 10px rgba(0, 0, 0, 0.5);
     }
     .css-1d391kg .stMarkdown,
     .css-1d391kg .stInfo,
     .css-1d391kg .stError,
     .css-1d391kg .stSuccess {
-        color: #1E3A8A;
+        color: #FFFFFF;
     }
     
     /* Info, Warning, Error, Success messages */
     .stInfo, .stWarning, .stError, .stSuccess {
-        background-color: white;
+        background: linear-gradient(145deg, #FFFFFF, #F5F8FF);
         color: #1E3A8A;
-        border: 1px solid #93C5FD;
+        border: 2px solid #3B82F6;
+        border-radius: 8px;
+        box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.4);
     }
     
     /* Metrics */
     .stMetric {
-        background-color: white;
-        color: #1E3A8A;
-        border: 1px solid #9ACD32;
-        border-radius: 5px;
+        background: linear-gradient(145deg, #FFFFFF, #F5F8FF);
+        border: 2px solid #3B82F6;
+        border-radius: 10px;
+        box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.4), -4px -4px 8px rgba(255, 255, 255, 0.1);
+        padding: 10px;
     }
-    .stmetric label {
-            color: #9ACD32 !important;
+    .stMetric label {
+        color: #3B82F6 !important;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
     }
-    .stmetric div[data-testid="stMetricValue"] {
-            color: #9ACD32 !important;
+    .stMetric div[data-testid="stMetricValue"] {
+        color: #3B82F6 !important;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
     }
-    .stmetric div[data-testid="stMetricDelta"] {
-            color: #9ACD32 !important;
+    .stMetric div[data-testid="stMetricDelta"] {
+        color: #3B82F6 !important;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
     }
     
     /* Expander */
     .streamlit-expander {
-        background-color: white;
+        background: linear-gradient(145deg, #FFFFFF, #F5F8FF);
         color: #1E3A8A;
-        border: 1px solid #93C5FD;
-        border-radius: 5px;
+        border: 2px solid #3B82F6;
+        border-radius: 10px;
+        box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.4);
+    }
+    .streamlit-expanderHeader {
+        background: linear-gradient(145deg, #3B82F6, #1E40AF);
+        color: #FFFFFF;
+        border-radius: 8px;
+        padding: 10px;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
     }
     
     /* Horizontal line */
     hr {
-        border-color: #93C5FD;
+        border-color: #3B82F6;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
     }
     
     /* Markdown text */
     .stMarkdown {
-        color: #1E3A8A;
+        color: #FFFFFF;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
     }
     </style>
 """, unsafe_allow_html=True)
