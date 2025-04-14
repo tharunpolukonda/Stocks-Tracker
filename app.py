@@ -111,8 +111,17 @@ st.markdown("""
     .stMetric {
         background-color: white;
         color: #1E3A8A;
-        border: 1px solid #93C5FD;
+        border: 1px solid #9ACD32;
         border-radius: 5px;
+    }
+    .stmetric label {
+            color: #9ACD32 !important;
+    }
+    .stmetric div[data-testid="stMetricValue"] {
+            color: #9ACD32 !important;
+    }
+    .stmetric div[data-testid="stMetricDelta"] {
+            color: #9ACD32 !important;
     }
     
     /* Expander */
@@ -167,7 +176,7 @@ def get_today_return(ticker_symbol):
     """Calculate today's return percentage for a stock"""
     try:
         stock = yf.Ticker(ticker_symbol)
-        data = stock.history(period="7d", interval="1d")
+        data = stock.history(period="2d", interval="1d")
         
         if len(data) < 2:
             return None, "Not enough data"
