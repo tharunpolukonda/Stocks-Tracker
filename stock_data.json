@@ -1,0 +1,251 @@
+{
+    "sectors": [
+        "IT & Tech",
+        "Construction Buildings & Real-Estate"
+    ],
+    "companies": [
+        {
+            "id": "2b7c3862-5915-425d-aad0-4011bd23e97c",
+            "name": "Zaggle Prepaid Ocean Services Ltd",
+            "ticker": "ZAGGLE.NS",
+            "sector": "IT & Tech",
+            "buy_price": 331.575,
+            "shares": 6,
+            "purchase_date": "2025-02-16",
+            "hx_cat": true,
+            "total_invested": 1989.45,
+            "profit_until_now": 0.0,
+            "loss_until_now": 0.0
+        },
+        {
+            "id": "0f274707-9941-4e47-b8d3-2c37c669310f",
+            "name": "Orient Technologies Ltd",
+            "ticker": "ORIENTTECH.NS",
+            "sector": "IT & Tech",
+            "buy_price": 322.59,
+            "shares": 2,
+            "purchase_date": "2025-03-11",
+            "hx_cat": true,
+            "total_invested": 645.18,
+            "profit_until_now": 0.0,
+            "loss_until_now": 0.0
+        },
+        {
+            "id": "de8f0f0c-48ad-4118-85ef-bffcff505cc6",
+            "name": "NCC Ltd",
+            "ticker": "NCC.NS",
+            "sector": "Construction Buildings & Real-Estate",
+            "buy_price": 212.56,
+            "shares": 5,
+            "purchase_date": "2025-03-11",
+            "hx_cat": true,
+            "total_invested": 1062.8,
+            "profit_until_now": 0.0,
+            "loss_until_now": 0.0
+        },
+        {
+            "id": "059073ea-c28d-43c3-8d30-10d9bbd92c1e",
+            "name": "Anant Raj Ltd",
+            "ticker": "ANANTRAJ.NS",
+            "sector": "Construction Buildings & Real-Estate",
+            "buy_price": 442.09,
+            "shares": 3,
+            "purchase_date": "2025-02-16",
+            "hx_cat": true,
+            "total_invested": 1326.27,
+            "profit_until_now": 0.0,
+            "loss_until_now": 183.39999999999998
+        }
+    ],
+    "transactions": [
+        {
+            "company_id": "b7be4a50-92ce-4c20-ac07-7dbcbe847588",
+            "type": "buy",
+            "amount": 811.14,
+            "shares": 1,
+            "price_per_share": 811.14,
+            "date": "2025-02-16",
+            "profit_loss": 0.0
+        },
+        {
+            "company_id": "b27410f8-57e6-4372-995c-ac3bf8766777",
+            "type": "buy",
+            "amount": 2295.92,
+            "shares": 8,
+            "price_per_share": 286.99,
+            "date": "2025-02-16",
+            "profit_loss": 0.0
+        },
+        {
+            "company_id": "e65ec07e-55f0-40b9-b8f3-22a6208ea892",
+            "type": "buy",
+            "amount": 992.01,
+            "shares": 3,
+            "price_per_share": 330.67,
+            "date": "2025-02-17",
+            "profit_loss": 0.0
+        },
+        {
+            "company_id": "527672a2-c420-4bbb-b6a6-7e686c2ec0b3",
+            "type": "buy",
+            "amount": 1346.25,
+            "shares": 5,
+            "price_per_share": 269.25,
+            "date": "2025-03-06",
+            "profit_loss": 0.0
+        },
+        {
+            "company_id": "728e3422-e313-49b8-bbfe-b5a95d429de5",
+            "type": "buy",
+            "amount": 636.0,
+            "shares": 3,
+            "price_per_share": 212.0,
+            "date": "2025-03-07",
+            "profit_loss": 0.0
+        },
+        {
+            "company_id": "199ada12-640e-440d-8b65-02d70bc68c1e",
+            "type": "buy",
+            "amount": 46.68,
+            "shares": 6,
+            "price_per_share": 7.78,
+            "date": "2025-03-12",
+            "profit_loss": 0.0
+        },
+        {
+            "company_id": "1b629e88-5bd2-4b9a-980c-b591643d8a46",
+            "type": "buy",
+            "amount": 322.59,
+            "shares": 1,
+            "price_per_share": 322.59,
+            "date": "2025-04-02",
+            "profit_loss": 0.0
+        },
+        {
+            "company_id": "64f1d2fb-72cb-4f5b-9333-b25dff1315e5",
+            "type": "buy",
+            "amount": 1326.27,
+            "shares": 3,
+            "price_per_share": 442.09,
+            "date": "2025-02-16",
+            "profit_loss": 0.0
+        },
+        {
+            "company_id": "64f1d2fb-72cb-4f5b-9333-b25dff1315e5",
+            "type": "sell",
+            "amount": 446.3,
+            "shares": 3,
+            "price_per_share": 148.76666666666668,
+            "date": "2025-04-15",
+            "profit_loss": -1167.7
+        },
+        {
+            "company_id": "1a071742-2c3a-4fbf-913b-f274b4f55492",
+            "type": "buy",
+            "amount": 1326.27,
+            "shares": 3,
+            "price_per_share": 442.09,
+            "date": "2025-04-10",
+            "profit_loss": 0.0
+        },
+        {
+            "company_id": "1a071742-2c3a-4fbf-913b-f274b4f55492",
+            "type": "sell",
+            "amount": 1338.8700000000001,
+            "shares": 3,
+            "price_per_share": 446.29,
+            "date": "2025-04-15",
+            "profit_loss": -275.12999999999994
+        },
+        {
+            "company_id": "1a071742-2c3a-4fbf-913b-f274b4f55492",
+            "type": "sell",
+            "amount": 500.0,
+            "shares": 1,
+            "price_per_share": 500.0,
+            "date": "2025-04-15",
+            "profit_loss": 57.910000000000025
+        },
+        {
+            "company_id": "1a071742-2c3a-4fbf-913b-f274b4f55492",
+            "type": "sell",
+            "amount": 300.0,
+            "shares": 1,
+            "price_per_share": 300.0,
+            "date": "2025-04-15",
+            "profit_loss": -142.09000000000003
+        },
+        {
+            "company_id": "1a071742-2c3a-4fbf-913b-f274b4f55492",
+            "type": "buy",
+            "amount": 442.09,
+            "shares": 1,
+            "price_per_share": 442.09,
+            "date": "2025-04-15",
+            "profit_loss": 0.0
+        },
+        {
+            "company_id": "1a071742-2c3a-4fbf-913b-f274b4f55492",
+            "type": "buy",
+            "amount": 442.06,
+            "shares": 1,
+            "price_per_share": 442.06,
+            "date": "2025-04-15",
+            "profit_loss": 0.0
+        },
+        {
+            "company_id": "2b7c3862-5915-425d-aad0-4011bd23e97c",
+            "type": "buy",
+            "amount": 1653.45,
+            "shares": 5,
+            "price_per_share": 330.69,
+            "date": "2025-02-16",
+            "profit_loss": 0.0
+        },
+        {
+            "company_id": "0f274707-9941-4e47-b8d3-2c37c669310f",
+            "type": "buy",
+            "amount": 645.18,
+            "shares": 2,
+            "price_per_share": 322.59,
+            "date": "2025-03-11",
+            "profit_loss": 0.0
+        },
+        {
+            "company_id": "de8f0f0c-48ad-4118-85ef-bffcff505cc6",
+            "type": "buy",
+            "amount": 1062.8,
+            "shares": 5,
+            "price_per_share": 212.56,
+            "date": "2025-03-11",
+            "profit_loss": 0.0
+        },
+        {
+            "company_id": "059073ea-c28d-43c3-8d30-10d9bbd92c1e",
+            "type": "buy",
+            "amount": 1326.27,
+            "shares": 3,
+            "price_per_share": 442.09,
+            "date": "2025-02-16",
+            "profit_loss": 0.0
+        },
+        {
+            "company_id": "059073ea-c28d-43c3-8d30-10d9bbd92c1e",
+            "type": "sell",
+            "amount": 892.6,
+            "shares": 2,
+            "price_per_share": 446.3,
+            "date": "2025-04-15",
+            "profit_loss": -183.39999999999998
+        },
+        {
+            "company_id": "2b7c3862-5915-425d-aad0-4011bd23e97c",
+            "type": "buy",
+            "amount": 336.0,
+            "shares": 1,
+            "price_per_share": 336.0,
+            "date": "2025-04-15",
+            "profit_loss": 0.0
+        }
+    ]
+}

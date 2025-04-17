@@ -1,4 +1,4 @@
 streamlit
 yfinance
 pandas
-zipp
+plotly==5.22.0
