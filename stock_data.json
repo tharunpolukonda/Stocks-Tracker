@@ -138,13 +138,13 @@
             "name": "Infosys Ltd",
             "ticker": "INFY.NS",
             "sector": "IT & Tech",
-            "buy_price": 1000.0,
-            "shares": 2,
+            "buy_price": 0,
+            "shares": 0,
             "purchase_date": "2025-04-03",
             "hx_cat": true,
-            "total_invested": 2000.0,
+            "total_invested": 0,
             "profit_until_now": 0.0,
-            "loss_until_now": 4000.1,
+            "loss_until_now": 5000.1,
             "listing_price": 0.0,
             "issue_price": 0.0,
             "issue_size": 0,
@@ -449,6 +449,15 @@
             "price_per_share": 500.0,
             "date": "2025-04-17",
             "profit_loss": -1500.0
+        },
+        {
+            "company_id": "6bad4b4d-2ae7-4d07-bbec-368ab1e57233",
+            "type": "sell",
+            "amount": 1000.0,
+            "shares": 2,
+            "price_per_share": 500.0,
+            "date": "2025-04-17",
+            "profit_loss": -1000.0
         }
     ]
 }
