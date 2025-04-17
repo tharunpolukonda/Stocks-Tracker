@@ -69,6 +69,19 @@
             "total_invested": 550.0,
             "profit_until_now": 0.0,
             "loss_until_now": 0.0
+        },
+        {
+            "id": "432bc883-4449-413d-848a-671347e8d65d",
+            "name": "Lupin Ltd",
+            "ticker": "LUPIN.NS",
+            "sector": "Pharma",
+            "buy_price": 1583.85,
+            "shares": 1,
+            "purchase_date": "2024-06-27",
+            "hx_cat": false,
+            "total_invested": 1583.85,
+            "profit_until_now": 0.0,
+            "loss_until_now": 0.0
         }
     ],
     "transactions": [
@@ -268,6 +281,15 @@
             "shares": 1,
             "price_per_share": 550.0,
             "date": "2023-06-20",
+            "profit_loss": 0.0
+        },
+        {
+            "company_id": "432bc883-4449-413d-848a-671347e8d65d",
+            "type": "buy",
+            "amount": 1583.85,
+            "shares": 1,
+            "price_per_share": 1583.85,
+            "date": "2024-06-27",
             "profit_loss": 0.0
         }
     ]
