@@ -194,6 +194,55 @@ st.markdown("""
         background-color: #1E3A8A;
         border-radius: 5px;
     }
+            
+    .sector-metrics-container {
+        border: 2px solid #3B82F6;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 20px;
+        background: linear-gradient(145deg, #1E3A8A, #000000);
+        box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.4);
+    }
+    .table-container {
+        border: 2px solid #3B82F6;
+        border-radius: 10px;
+        padding: 15px;
+        background: linear-gradient(145deg, #FFFFFF, #F5F8FF);
+        box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.4);
+    }
+    .table-row {
+        border-bottom: 1px solid #3B82F6;
+        padding: 10px 0;
+        display: flex;
+        align-items: center;
+    }
+    .table-cell {
+        border-right: 1px solid #3B82F6;
+        padding: 5px 10px;
+        color: #1E3A8A;
+    }
+    .table-cell:last-child {
+        border-right: none;
+    }
+    .company-details-container {
+        border: 2px solid #3B82F6;
+        border-radius: 10px;
+        padding: 15px;
+        margin-top: 20px;
+        background: linear-gradient(145deg, #1E3A8A, #000000);
+        box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.4);
+    }
+    .ipo-details-container {
+        border: 2px solid #00FF00;
+        border-radius: 10px;
+        padding: 15px;
+        margin-top: 15px;
+        background: linear-gradient(145deg, #1E3A8A, #000000);
+        box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.4);
+    }
+    span[style*='color: #00FF00'] {
+        font-weight: bold;
+    }        
     </style>
 """, unsafe_allow_html=True)
 
@@ -206,18 +255,28 @@ def save_data(data):
         repo.update_file(
             path=FILE_PATH,
             message="Update stock_data.json with new data",
-            content=json.dumps(data, indent=4),
+            content=json.dumps(data, indent=4).encode('utf-8'),
             sha=contents.sha,
             branch=BRANCH
         )
-    except:
+        print(f"Successfully updated {FILE_PATH} in {REPO_NAME}")
+    except Exception as e:
         # If file doesn't exist, create it
-        repo.create_file(
-            path=FILE_PATH,
-            message="Create stock_data.json",
-            content=json.dumps(data, indent=4),
-            branch=BRANCH
-        )
+        if "404" in str(e):
+            try:
+                repo.create_file(
+                    path=FILE_PATH,
+                    message="Create stock_data.json",
+                    content=json.dumps(data, indent=4).encode('utf-8'),
+                    branch=BRANCH
+                )
+                print(f"Successfully created {FILE_PATH} in {REPO_NAME}")
+            except Exception as create_e:
+                print(f"Failed to create {FILE_PATH}: {str(create_e)}")
+                raise create_e
+        else:
+            print(f"Failed to update {FILE_PATH}: {str(e)}")
+            raise e
 
 def load_data():
     """Load data from stock_data.json on GitHub or initialize empty structure"""
@@ -226,39 +285,46 @@ def load_data():
         # Decode base64 content
         decoded_content = base64.b64decode(contents.content).decode("utf-8")
         data = json.loads(decoded_content)
-        # Ensure all companies have an 'id' and 'total_invested' field
+        # Ensure all companies have required fields
         for company in data.get("companies", []):
             if "id" not in company:
                 company["id"] = str(uuid.uuid4())
-            # Initialize total_invested if missing
             if "total_invested" not in company:
                 buy_price = company.get("buy_price", 0)
                 shares = company.get("shares", 0)
                 company["total_invested"] = buy_price * shares
-            # Initialize profit/loss fields if missing
             if "profit_until_now" not in company:
                 company["profit_until_now"] = 0.0
             if "loss_until_now" not in company:
                 company["loss_until_now"] = 0.0
-            # Initialize transaction for existing companies with shares if none exist
+            # Initialize IPO fields if missing
+            if "listing_price" not in company:
+                company["listing_price"] = 0.0
+            if "issue_price" not in company:
+                company["issue_price"] = 0.0
+            if "issue_size" not in company:
+                company["issue_size"] = 0
+            if "listed_date" not in company:
+                company["listed_date"] = ""
+            if "grow_link" not in company:
+                company["grow_link"] = ""
+            # Initialize transaction for existing companies with shares
             if company.get("shares", 0) > 0 and company["total_invested"] > 0:
-                buy_price = company.get("buy_price", 0)
-                shares = company.get("shares", 0)
-                total_invested = company["total_invested"]
                 if not any(t["company_id"] == company["id"] for t in data.get("transactions", [])):
                     transaction = {
                         "company_id": company["id"],
                         "type": "buy",
-                        "amount": total_invested,
-                        "shares": shares,
-                        "price_per_share": buy_price,
+                        "amount": company["total_invested"],
+                        "shares": company["shares"],
+                        "price_per_share": company["buy_price"],
                         "date": company.get("purchase_date", datetime.date.today().strftime("%Y-%m-%d")),
                         "profit_loss": 0.0
                     }
                     data["transactions"] = data.get("transactions", []) + [transaction]
         save_data(data)  # Save updated data
         return data
-    except:
+    except Exception as e:
+        print(f"Failed to load {FILE_PATH}: {str(e)}")
         # If file doesn't exist or can't be accessed, return empty structure
         data = {
             "sectors": [],
@@ -283,7 +349,6 @@ def get_current_stock_price(symbol):
         return None
 
 def get_today_return(ticker_symbol):
-    """Calculate today's return percentage with fallback to previous trading day"""
     if 'return_cache' not in st.session_state:
         st.session_state.return_cache = {}
     
@@ -296,44 +361,49 @@ def get_today_return(ticker_symbol):
     for attempt in range(max_retries):
         try:
             stock = yf.Ticker(ticker_symbol)
-            # Start from today and go back up to 5 days to find the last trading day
-            data = stock.history(start=today - timedelta(days=5), end=today + timedelta(days=1), interval="1d")
+            # Fetch 7 days to ensure enough data
+            data = stock.history(start=today - timedelta(days=7), end=today + timedelta(days=1), interval="1d")
             
-            if len(data) < 1:
-                return None, "Not enough data"
+            if len(data) < 2:
+                print(f"Error for {ticker_symbol}: Not enough data, only {len(data)} days")
+                return None, f"Not enough data: {len(data)} days"
             
-            # Get today's close
+            # Get the two most recent trading days
+            sorted_dates = sorted(data.index, reverse=True)
             today_str = today.strftime('%Y-%m-%d')
-            today_close = None
-            if today_str in data.index.strftime('%Y-%m-%d'):
-                today_close = data.loc[today_str]["Close"]
             
-            # Find the last available trading day before today
+            # Try today's close, else use the latest available
+            today_close = None
+            latest_date = sorted_dates[0].strftime('%Y-%m-%d')
+            if latest_date <= today_str:
+                today_close = data.loc[latest_date]["Close"]
+            
+            # Get previous trading day's close
             previous_close = None
             previous_date = None
-            for date in data.index[::-1]:
-                date_str = date.strftime('%Y-%m-%d')
-                if date_str < today_str:
-                    previous_close = data.loc[date_str]["Close"]
-                    previous_date = date_str
-                    break
+            if len(sorted_dates) > 1:
+                previous_date = sorted_dates[1].strftime('%Y-%m-%d')
+                previous_close = data.loc[previous_date]["Close"]
             
             if today_close is None or previous_close is None:
+                print(f"Error for {ticker_symbol}: Missing price data - today_close={today_close}, previous_close={previous_close}")
                 return None, "Missing price data"
             
             if previous_close == 0:
+                print(f"Error for {ticker_symbol}: Zero close price on {previous_date}")
                 return None, "Invalid data: Zero close price"
             
             return_pct = ((today_close - previous_close) / previous_close) * 100
             return_value = round(return_pct, 2)
             
-            # Cache the result
-            st.session_state.return_cache[cache_key] = (return_value, f"{previous_date} to {today_str}")
-            return return_value, f"{previous_date} to {today_str}"
+            st.session_state.return_cache[cache_key] = (return_value, f"{previous_date} to {latest_date}")
+            print(f"Success for {ticker_symbol}: {return_value}% from {previous_date} to {latest_date}")
+            return return_value, f"{previous_date} to {latest_date}"
         
         except Exception as e:
+            print(f"Attempt {attempt + 1} failed for {ticker_symbol}: {str(e)}")
             if attempt < max_retries - 1:
-                time.sleep(1)  # Wait before retrying
+                time.sleep(1)
                 continue
             return None, f"Error: {str(e)}"
 
@@ -384,6 +454,9 @@ if 'add_sector_clicked' not in st.session_state:
 if 'add_company_clicked' not in st.session_state:
     st.session_state.add_company_clicked = False
     
+if 'add_ipo_clicked' not in st.session_state:
+    st.session_state.add_ipo_clicked = False
+    
 if 'view_mode' not in st.session_state:
     st.session_state.view_mode = False
     
@@ -426,10 +499,14 @@ if 'show_journal_ledger' not in st.session_state:
 if 'edit_company' not in st.session_state:
     st.session_state.edit_company = None
 
+if 'view_company_details' not in st.session_state:
+    st.session_state.view_company_details = None
+
 # Helper functions to toggle UI states
 def toggle_add_sector():
     st.session_state.add_sector_clicked = not st.session_state.add_sector_clicked
     st.session_state.add_company_clicked = False
+    st.session_state.add_ipo_clicked = False
     st.session_state.view_mode = False
     st.session_state.show_high_return = False
     st.session_state.show_hx_cat = False
@@ -443,6 +520,21 @@ def toggle_add_sector():
 def toggle_add_company():
     st.session_state.add_company_clicked = not st.session_state.add_company_clicked
     st.session_state.add_sector_clicked = False
+    st.session_state.add_ipo_clicked = False
+    st.session_state.view_mode = False
+    st.session_state.show_high_return = False
+    st.session_state.show_hx_cat = False
+    st.session_state.show_invest_companies = False
+    st.session_state.show_visualize_companies = False
+    st.session_state.show_journal_ledger = False
+    st.session_state.filter_cap_wise = False
+    st.session_state.filter_combined_caps = False
+    st.session_state.edit_company = None
+
+def toggle_add_ipo():
+    st.session_state.add_ipo_clicked = not st.session_state.add_ipo_clicked
+    st.session_state.add_sector_clicked = False
+    st.session_state.add_company_clicked = False
     st.session_state.view_mode = False
     st.session_state.show_high_return = False
     st.session_state.show_hx_cat = False
@@ -457,6 +549,7 @@ def toggle_view_mode():
     st.session_state.view_mode = not st.session_state.view_mode
     st.session_state.add_sector_clicked = False
     st.session_state.add_company_clicked = False
+    st.session_state.add_ipo_clicked = False
     st.session_state.show_high_return = False
     st.session_state.show_hx_cat = False
     st.session_state.show_invest_companies = False
@@ -472,6 +565,7 @@ def toggle_high_return():
     st.session_state.show_high_return = not st.session_state.show_high_return
     st.session_state.add_sector_clicked = False
     st.session_state.add_company_clicked = False
+    st.session_state.add_ipo_clicked = False
     st.session_state.view_mode = False
     st.session_state.show_hx_cat = False
     st.session_state.show_invest_companies = False
@@ -487,6 +581,7 @@ def toggle_hx_cat():
     st.session_state.show_hx_cat = not st.session_state.show_hx_cat
     st.session_state.add_sector_clicked = False
     st.session_state.add_company_clicked = False
+    st.session_state.add_ipo_clicked = False
     st.session_state.view_mode = False
     st.session_state.show_high_return = False
     st.session_state.show_invest_companies = False
@@ -500,6 +595,7 @@ def toggle_invest_companies():
     st.session_state.show_invest_companies = not st.session_state.show_invest_companies
     st.session_state.add_sector_clicked = False
     st.session_state.add_company_clicked = False
+    st.session_state.add_ipo_clicked = False
     st.session_state.view_mode = False
     st.session_state.show_high_return = False
     st.session_state.show_hx_cat = False
@@ -515,6 +611,7 @@ def toggle_visualize_companies():
     st.session_state.show_visualize_companies = not st.session_state.show_visualize_companies
     st.session_state.add_sector_clicked = False
     st.session_state.add_company_clicked = False
+    st.session_state.add_ipo_clicked = False
     st.session_state.view_mode = False
     st.session_state.show_high_return = False
     st.session_state.show_hx_cat = False
@@ -530,6 +627,7 @@ def toggle_journal_ledger():
     st.session_state.show_journal_ledger = not st.session_state.show_journal_ledger
     st.session_state.add_sector_clicked = False
     st.session_state.add_company_clicked = False
+    st.session_state.add_ipo_clicked = False
     st.session_state.view_mode = False
     st.session_state.show_high_return = False
     st.session_state.show_hx_cat = False
@@ -558,6 +656,7 @@ def toggle_edit_company(company_id):
 def go_to_home():
     st.session_state.add_sector_clicked = False
     st.session_state.add_company_clicked = False
+    st.session_state.add_ipo_clicked = False
     st.session_state.view_mode = False
     st.session_state.show_high_return = False
     st.session_state.show_hx_cat = False
@@ -576,7 +675,7 @@ st.markdown("Track stock prices organized by business sectors")
 
 # Action buttons at the top
 st.markdown("### Actions")
-col1, col2, col3, col4, col5, col6, col7, col8, col9 = st.columns(9)
+col1, col2, col3, col4, col5, col6, col7, col8, col9, col10 = st.columns(10)
 with col1:
     if st.button("Home", key="home_button"):
         go_to_home()
@@ -587,26 +686,29 @@ with col3:
     if st.button("Add Company", key="add_company_button"):
         toggle_add_company()
 with col4:
+    if st.button("Add IPOs", key="add_ipo_button"):
+        toggle_add_ipo()
+with col5:
     if st.button("View Sectors", key="view_mode_button", 
                  type="primary" if st.session_state.view_mode else "secondary"):
         toggle_view_mode()
-with col5:
+with col6:
     if st.button("High Return", key="high_return_button",
                  type="primary" if st.session_state.show_high_return else "secondary"):
         toggle_high_return()
-with col6:
+with col7:
     if st.button("Track-HX-CAT", key="hx_cat_button",
                  type="primary" if st.session_state.show_hx_cat else "secondary"):
         toggle_hx_cat()
-with col7:
+with col8:
     if st.button("Track_Invest", key="invest_companies_button",
                  type="primary" if st.session_state.show_invest_companies else "secondary"):
         toggle_invest_companies()
-with col8:
+with col9:
     if st.button("Visualize Companies", key="visualize_companies_button",
                  type="primary" if st.session_state.show_visualize_companies else "secondary"):
         toggle_visualize_companies()
-with col9:
+with col10:
     if st.button("Journal & Ledger", key="journal_ledger_button",
                  type="primary" if st.session_state.show_journal_ledger else "secondary"):
         toggle_journal_ledger()
@@ -638,30 +740,30 @@ if st.session_state.add_company_clicked:
         st.warning("Please add at least one sector first!")
     else:
         with st.form("add_company_form"):
-            company_name = st.text_input("Company Name", placeholder="e.g. Apple Inc.")
-            ticker_code = st.text_input("Ticker Code", placeholder="e.g. AAPL")
+            company_name = st.text_input("Company Name", placeholder="e.g. Reliance Industries")
+            ticker_code = st.text_input("Ticker Code", placeholder="e.g. RELIANCE")
             selected_sector = st.selectbox("Select Sector", st.session_state.data["sectors"])
             
-            buy_price = st.number_input("Buy Price", min_value=0.00, format="%.2f", 
+            buy_price = st.number_input("Buy Price", min_value=0.00, value=0.00, format="%.2f", 
                                        placeholder="Enter your purchase price")
-            shares = st.number_input("Number of Shares", min_value=0, step=1, 
+            shares = st.number_input("Number of Shares", min_value=0, value=0, step=1, 
                                     placeholder="Enter number of shares bought")
             
             purchase_date = st.date_input("Purchase Date", 
                                          value=datetime.date.today(),
                                          max_value=datetime.date.today())
             
-            suffix_options = [".NS", ".BO", ""]
+            suffix_options = [".NS", ".BO"]
             suffix = st.selectbox("Exchange Suffix", suffix_options, 
                                   index=0, 
-                                  help=".NS for NSE, .BO for BSE, blank for US markets")
+                                  help=".NS for NSE, .BO for BSE")
             
             move_to_hx = st.selectbox("Move to HX Category", ["No", "Yes"], 
                                      help="Select Yes to tag as HX-CAT")
             
             submit_company = st.form_submit_button("Add Company")
             
-            if submit_company and company_name and ticker_code and buy_price > 0:
+            if submit_company and company_name and ticker_code:
                 full_ticker = f"{ticker_code}{suffix}"
                 
                 existing_tickers = [company["ticker"] for company in st.session_state.data["companies"]]
@@ -681,20 +783,26 @@ if st.session_state.add_company_clicked:
                             "hx_cat": move_to_hx == "Yes",
                             "total_invested": float(buy_price) * int(shares),
                             "profit_until_now": 0.0,
-                            "loss_until_now": 0.0
+                            "loss_until_now": 0.0,
+                            "listing_price": 0.0,
+                            "issue_price": 0.0,
+                            "issue_size": 0,
+                            "listed_date": "",
+                            "grow_link": ""
                         }
                         st.session_state.data["companies"].append(new_company)
-                        # Log transaction
-                        transaction = {
-                            "company_id": new_company["id"],
-                            "type": "buy",
-                            "amount": new_company["total_invested"],
-                            "shares": new_company["shares"],
-                            "price_per_share": new_company["buy_price"],
-                            "date": new_company["purchase_date"],
-                            "profit_loss": 0.0
-                        }
-                        st.session_state.data["transactions"].append(transaction)
+                        # Log transaction if shares > 0
+                        if shares > 0 and buy_price > 0:
+                            transaction = {
+                                "company_id": new_company["id"],
+                                "type": "buy",
+                                "amount": new_company["total_invested"],
+                                "shares": new_company["shares"],
+                                "price_per_share": new_company["buy_price"],
+                                "date": new_company["purchase_date"],
+                                "profit_loss": 0.0
+                            }
+                            st.session_state.data["transactions"].append(transaction)
                         save_data(st.session_state.data)
                         st.success(f"Company '{company_name}' added successfully!")
                         st.session_state.add_company_clicked = False
@@ -702,7 +810,98 @@ if st.session_state.add_company_clicked:
                     else:
                         st.error(f"Could not fetch data for ticker '{full_ticker}'. Please verify the ticker code.")
             elif submit_company:
-                st.error("Please fill all required fields with valid values.")
+                st.error("Please fill Company Name and Ticker Code.")
+
+# Add IPOs Form
+if st.session_state.add_ipo_clicked:
+    st.subheader("Add IPO to Track")
+    
+    if not st.session_state.data["sectors"]:
+        st.warning("Please add at least one sector first!")
+    else:
+        with st.form("add_ipo_form"):
+            company_name = st.text_input("Company Name", placeholder="e.g. Ola Electric")
+            ticker_code = st.text_input("Ticker Code", placeholder="e.g. OLA")
+            selected_sector = st.selectbox("Select Sector", st.session_state.data["sectors"])
+            
+            buy_price = st.number_input("Buy Price", min_value=0.00, value=0.00, format="%.2f", 
+                                       placeholder="Enter your purchase price")
+            shares = st.number_input("Number of Shares", min_value=0, value=0, step=1, 
+                                    placeholder="Enter number of shares bought")
+            
+            purchase_date = st.date_input("Purchase Date", 
+                                         value=datetime.date.today(),
+                                         max_value=datetime.date.today())
+            
+            suffix_options = [".NS", ".BO"]
+            suffix = st.selectbox("Exchange Suffix", suffix_options, 
+                                  index=0, 
+                                  help=".NS for NSE, .BO for BSE")
+            
+            move_to_hx = st.selectbox("Move to HX Category", ["No", "Yes"], 
+                                     help="Select Yes to tag as HX-CAT")
+            
+            listing_price = st.number_input("Listing Price", min_value=0.00, value=0.00, format="%.2f", 
+                                           placeholder="Enter listing price")
+            issue_price = st.number_input("Issue Price", min_value=0.00, value=0.00, format="%.2f", 
+                                         placeholder="Enter issue price")
+            issue_size = st.number_input("Issue Size (in shares)", min_value=0, value=0, step=1, 
+                                        placeholder="Enter issue size")
+            listed_date = st.date_input("Listed Date", 
+                                       value=datetime.date.today(),
+                                       max_value=datetime.date.today())
+            grow_link = st.text_input("GrowLink", placeholder="e.g. https://groww.in/ipo/ola-electric")
+            
+            submit_ipo = st.form_submit_button("Add IPO")
+            
+            if submit_ipo and company_name and ticker_code:
+                full_ticker = f"{ticker_code}{suffix}"
+                
+                existing_tickers = [company["ticker"] for company in st.session_state.data["companies"]]
+                if full_ticker in existing_tickers:
+                    st.error(f"Company with ticker '{full_ticker}' already exists!")
+                else:
+                    test_price = get_current_stock_price(full_ticker)
+                    if test_price is not None:
+                        new_company = {
+                            "id": str(uuid.uuid4()),
+                            "name": company_name,
+                            "ticker": full_ticker,
+                            "sector": selected_sector,
+                            "buy_price": float(buy_price),
+                            "shares": int(shares),
+                            "purchase_date": purchase_date.strftime("%Y-%m-%d"),
+                            "hx_cat": move_to_hx == "Yes",
+                            "total_invested": float(buy_price) * int(shares),
+                            "profit_until_now": 0.0,
+                            "loss_until_now": 0.0,
+                            "listing_price": float(listing_price),
+                            "issue_price": float(issue_price),
+                            "issue_size": int(issue_size),
+                            "listed_date": listed_date.strftime("%Y-%m-%d"),
+                            "grow_link": grow_link
+                        }
+                        st.session_state.data["companies"].append(new_company)
+                        # Log transaction if shares > 0
+                        if shares > 0 and buy_price > 0:
+                            transaction = {
+                                "company_id": new_company["id"],
+                                "type": "buy",
+                                "amount": new_company["total_invested"],
+                                "shares": new_company["shares"],
+                                "price_per_share": new_company["buy_price"],
+                                "date": new_company["purchase_date"],
+                                "profit_loss": 0.0
+                            }
+                            st.session_state.data["transactions"].append(transaction)
+                        save_data(st.session_state.data)
+                        st.success(f"IPO '{company_name}' added successfully!")
+                        st.session_state.add_ipo_clicked = False
+                        st.rerun()
+                    else:
+                        st.error(f"Could not fetch data for ticker '{full_ticker}'. Please verify the ticker code.")
+            elif submit_ipo:
+                st.error("Please fill Company Name and Ticker Code.")
 
 # Edit Company Form
 if st.session_state.edit_company:
@@ -710,8 +909,8 @@ if st.session_state.edit_company:
     if company:
         st.subheader(f"Edit Company: {company['name']}")
         with st.form(f"edit_company_form_{company['id']}"):
-            company_name = st.text_input("Company Name", value=company["name"], placeholder="e.g. Apple Inc.")
-            ticker_code = st.text_input("Ticker Code", value=company["ticker"].replace(".NS", "").replace(".BO", ""), placeholder="e.g. AAPL")
+            company_name = st.text_input("Company Name", value=company["name"], placeholder="e.g. Reliance Industries")
+            ticker_code = st.text_input("Ticker Code", value=company["ticker"].replace(".NS", "").replace(".BO", ""), placeholder="e.g. RELIANCE")
             selected_sector = st.selectbox("Select Sector", st.session_state.data["sectors"], index=st.session_state.data["sectors"].index(company["sector"]))
             
             buy_price = st.number_input("Buy Price", min_value=0.00, format="%.2f", value=float(company["buy_price"]), placeholder="Enter your purchase price")
@@ -719,15 +918,22 @@ if st.session_state.edit_company:
             
             purchase_date = st.date_input("Purchase Date", value=datetime.datetime.strptime(company["purchase_date"], "%Y-%m-%d").date(), max_value=datetime.date.today())
             
-            suffix_options = [".NS", ".BO", ""]
-            current_suffix = ".NS" if company["ticker"].endswith(".NS") else ".BO" if company["ticker"].endswith(".BO") else ""
-            suffix = st.selectbox("Exchange Suffix", suffix_options, index=suffix_options.index(current_suffix), help=".NS for NSE, .BO for BSE, blank for US markets")
+            suffix_options = [".NS", ".BO"]
+            current_suffix = ".NS" if company["ticker"].endswith(".NS") else ".BO" if company["ticker"].endswith(".BO") else ".NS"
+            suffix = st.selectbox("Exchange Suffix", suffix_options, index=suffix_options.index(current_suffix), help=".NS for NSE, .BO for BSE")
             
             move_to_hx = st.selectbox("Move to HX Category", ["No", "Yes"], index=1 if company["hx_cat"] else 0, help="Select Yes to tag as HX-CAT")
             
+            # IPO fields
+            listing_price = st.number_input("Listing Price", min_value=0.00, format="%.2f", value=float(company.get("listing_price", 0.0)), placeholder="Enter listing price")
+            issue_price = st.number_input("Issue Price", min_value=0.00, format="%.2f", value=float(company.get("issue_price", 0.0)), placeholder="Enter issue price")
+            issue_size = st.number_input("Issue Size (in shares)", min_value=0, step=1, value=int(company.get("issue_size", 0)), placeholder="Enter issue size")
+            listed_date = st.date_input("Listed Date", value=datetime.datetime.strptime(company.get("listed_date", datetime.date.today().strftime("%Y-%m-%d")), "%Y-%m-%d").date() if company.get("listed_date") else datetime.date.today(), max_value=datetime.date.today())
+            grow_link = st.text_input("GrowLink", value=company.get("grow_link", ""), placeholder="e.g. https://groww.in/ipo/ola-electric")
+            
             col1, col2 = st.form_submit_button("Update Company"), st.form_submit_button("Cancel")
             
-            if col1 and company_name and ticker_code and buy_price > 0:
+            if col1 and company_name and ticker_code:
                 full_ticker = f"{ticker_code}{suffix}"
                 
                 existing_tickers = [c["ticker"] for c in st.session_state.data["companies"] if c["id"] != company["id"]]
@@ -744,11 +950,16 @@ if st.session_state.edit_company:
                             "shares": int(shares),
                             "purchase_date": purchase_date.strftime("%Y-%m-%d"),
                             "hx_cat": move_to_hx == "Yes",
-                            "total_invested": float(buy_price) * int(shares)
+                            "total_invested": float(buy_price) * int(shares),
+                            "listing_price": float(listing_price),
+                            "issue_price": float(issue_price),
+                            "issue_size": int(issue_size),
+                            "listed_date": listed_date.strftime("%Y-%m-%d"),
+                            "grow_link": grow_link
                         })
                         # Update transaction if exists, or create new one
                         existing_transaction = next((t for t in st.session_state.data["transactions"] if t["company_id"] == company["id"] and t["type"] == "buy"), None)
-                        if existing_transaction:
+                        if existing_transaction and shares > 0 and buy_price > 0:
                             existing_transaction.update({
                                 "amount": company["total_invested"],
                                 "shares": company["shares"],
@@ -756,7 +967,7 @@ if st.session_state.edit_company:
                                 "date": company["purchase_date"],
                                 "profit_loss": 0.0
                             })
-                        else:
+                        elif shares > 0 and buy_price > 0:
                             transaction = {
                                 "company_id": company["id"],
                                 "type": "buy",
@@ -774,163 +985,162 @@ if st.session_state.edit_company:
                     else:
                         st.error(f"Could not fetch data for ticker '{full_ticker}'. Please verify the ticker code.")
             elif col1:
-                st.error("Please fill all required fields with valid values.")
+                st.error("Please fill Company Name and Ticker Code.")
             elif col2:
                 st.session_state.edit_company = None
                 st.rerun()
 
 # Journal & Ledger Section
 if st.session_state.show_journal_ledger:
-    st.header("Journal & Ledger")
+    st.header("Journal & Ledger - Transaction History")
     
-    if not st.session_state.data["companies"]:
-        st.info("No companies added yet. Click 'Add Company' to start tracking stocks.")
-    else:
-        data = []
-        for company in st.session_state.data["companies"]:
-            total_invested = company.get("total_invested", 0)
-            if total_invested > 1:
-                shares = company.get("shares", 0)
-                avg_share_price = total_invested / shares if shares > 0 else 0
-                current_price = get_current_stock_price(company["ticker"])
-                currency_symbol = "₹" if company["ticker"].endswith(('.NS', '.BO')) else "$"
-                company_data = {
-                    "Company": company["name"],
-                    "Total Invested": f"{currency_symbol}{total_invested:.2f}",
-                    "Total No. of Shares Holding": shares,
-                    "Profit Until Now": f"{currency_symbol}{company.get('profit_until_now', 0):.2f}",
-                    "Loss Until Now": f"{currency_symbol}{company.get('loss_until_now', 0):.2f}",
-                    "Each Share Price": f"{currency_symbol}{avg_share_price:.2f}",
-                    "Current Price": f"{currency_symbol}{current_price:.2f}" if current_price else "N/A",
-                    "ID": company["id"]
-                }
-                data.append(company_data)
+    # Initialize filter options
+    filter_options = ["All", "Profit Until Now", "Loss Until Now"]
+    selected_filter = st.selectbox("Filter Transactions", filter_options)
+    
+    # Prepare data for the table
+    table_data = []
+    for company in st.session_state.data["companies"]:
+        current_price = get_current_stock_price(company["ticker"])
+        day_return, _ = get_today_return(company["ticker"])
+        buy_price = company.get("buy_price", 0)
+        shares = company.get("shares", 0)
+        total_invested = company.get("total_invested", buy_price * shares)
+        purchase_date = company.get("purchase_date", "N/A")
+        profit_until_now = company.get("profit_until_now", 0.0)
+        loss_until_now = company.get("loss_until_now", 0.0)
+        currency_symbol = "₹" if company["ticker"].endswith(('.NS', '.BO')) else "$"
         
-        if not data:
-            st.info("No companies with total invested amount greater than ₹1 found.")
+        pl_data = None
+        if current_price and shares > 0:
+            pl_data = calculate_profit_loss(buy_price, shares, current_price)
+        
+        company_data = {
+            "Company": company["name"],
+            "Ticker": company["ticker"],
+            "Sector": company["sector"],
+            "Shares": shares,
+            "Buy Price": f"{currency_symbol}{buy_price:.2f}",
+            "Current Price": f"{currency_symbol}{current_price:.2f}" if current_price else "N/A",
+            "Day Change": f"{day_return}%" if day_return is not None else "N/A",
+            "Invested": f"{currency_symbol}{total_invested:.2f}",
+            "Profit Until Now": f"{currency_symbol}{profit_until_now:.2f}",
+            "Loss Until Now": f"{currency_symbol}{loss_until_now:.2f}",
+            "Purchase Date": purchase_date,
+            "ID": company["id"]
+        }
+        
+        if pl_data:
+            company_data.update({
+                "Current Value": f"{currency_symbol}{pl_data['current_value']:.2f}",
+                "P/L": f"{currency_symbol}{pl_data['profit_loss']:.2f}",
+                "P/L %": f"{pl_data['profit_loss_percent']:.2f}%"
+            })
         else:
-            df = pd.DataFrame(data)
-            st.subheader("Investment Ledger")
-            st.dataframe(df.drop(columns=["ID"]), use_container_width=True)
+            company_data.update({
+                "Current Value": "N/A",
+                "P/L": "N/A",
+                "P/L %": "N/A"
+            })
+        
+        # Apply filter
+        if selected_filter == "All":
+            table_data.append(company_data)
+        elif selected_filter == "Profit Until Now" and profit_until_now > 0:
+            table_data.append(company_data)
+        elif selected_filter == "Loss Until Now" and loss_until_now > 0:
+            table_data.append(company_data)
+    
+    # Display the table
+    if not table_data:
+        st.info("No transactions match the selected filter.")
+    else:
+        df = pd.DataFrame(table_data)
+        st.dataframe(
+            df.drop(columns=["ID"]),
+            use_container_width=True,
+            column_config={
+                "Company": st.column_config.TextColumn(width="medium"),
+                "Ticker": st.column_config.TextColumn(width="small"),
+                "Sector": st.column_config.TextColumn(width="small"),
+                "Shares": st.column_config.NumberColumn(width="small"),
+                "Buy Price": st.column_config.TextColumn(width="small"),
+                "Current Price": st.column_config.TextColumn(width="small"),
+                "Day Change": st.column_config.TextColumn(width="small"),
+                "Invested": st.column_config.TextColumn(width="small"),
+                "Profit Until Now": st.column_config.TextColumn(width="small"),
+                "Loss Until Now": st.column_config.TextColumn(width="small"),
+                "Purchase Date": st.column_config.TextColumn(width="small"),
+                "Current Value": st.column_config.TextColumn(width="small"),
+                "P/L": st.column_config.TextColumn(width="small"),
+                "P/L %": st.column_config.TextColumn(width="small")
+            }
+        )
+    
+    # Manage Transactions
+    st.subheader("Manage Transactions")
+    with st.form(key="transaction_form"):
+        # Dropdown includes all companies, not just those with shares > 0
+        company_options = {c["name"]: c["id"] for c in st.session_state.data["companies"]}
+        selected_company_name = st.selectbox("Select Company", options=[""] + list(company_options.keys()))
+        transaction_type = st.selectbox("Transaction Type", ["Buy", "Sell"])
+        shares = st.number_input("Number of Shares", min_value=0, step=1)
+        price_per_share = st.number_input("Price per Share (₹)", min_value=0.0, step=0.01)
+        transaction_date = st.date_input("Transaction Date", value=datetime.date.today())
+        submit_button = st.form_submit_button("Add Transaction")
+        
+        if submit_button and selected_company_name:
+            company_id = company_options[selected_company_name]
+            company = next(c for c in st.session_state.data["companies"] if c["id"] == company_id)
+            amount = shares * price_per_share
             
-            st.subheader("Manage Transactions")
-            selected_company = st.selectbox("Select Company", options=[d["Company"] for d in data], key="ledger_company")
-            selected_company_data = next((d for d in data if d["Company"] == selected_company), None)
+            # Create transaction
+            transaction = {
+                "company_id": company_id,
+                "type": transaction_type.lower(),
+                "amount": amount,
+                "shares": shares,
+                "price_per_share": price_per_share,
+                "date": transaction_date.strftime("%Y-%m-%d"),
+                "profit_loss": 0.0
+            }
             
-            if selected_company_data:
-                col1, col2 = st.columns(2)
-                with col1:
-                    if st.button("Sold Shares", key=f"sell_{selected_company_data['ID']}"):
-                        st.session_state[f"sell_form_{selected_company_data['ID']}"] = True
-                with col2:
-                    if st.button("Invested More", key=f"invest_{selected_company_data['ID']}"):
-                        st.session_state[f"invest_form_{selected_company_data['ID']}"] = True
-                
-                # Sell Shares Form
-                if st.session_state.get(f"sell_form_{selected_company_data['ID']}", False):
-                    with st.form(f"sell_shares_form_{selected_company_data['ID']}"):
-                        shares_sold = st.number_input("Number of Shares Sold", min_value=1, max_value=selected_company_data["Total No. of Shares Holding"], step=1)
-                        sell_price_per_share = st.number_input("Sell Price per Share", min_value=0.00, format="%.2f")
-                        total_sold_amt = shares_sold * sell_price_per_share
-                        st.write(f"Total Sale Value: {currency_symbol}{total_sold_amt:.2f}")
-                        submit_sell = st.form_submit_button("Confirm Sale")
-                        
-                        if submit_sell and total_sold_amt > 0 and shares_sold > 0:
-                            company = next((c for c in st.session_state.data["companies"] if c["id"] == selected_company_data["ID"]), None)
-                            if company:
-                                # Calculate average buy price
-                                current_shares = company.get("shares", 0)
-                                current_total_invested = company.get("total_invested", 0)
-                                avg_buy_price = current_total_invested / current_shares if current_shares > 0 else 0
-                                
-                                # Calculate profit/loss for sold shares
-                                pl = (sell_price_per_share - avg_buy_price) * shares_sold
-                                
-                                # Update profit/loss fields
-                                if pl >= 0:
-                                    company["profit_until_now"] = company.get("profit_until_now", 0) + pl
-                                    company["loss_until_now"] = company.get("loss_until_now", 0)
-                                else:
-                                    company["loss_until_now"] = company.get("loss_until_now", 0) + abs(pl)
-                                    company["profit_until_now"] = company.get("profit_until_now", 0)
-                                
-                                # Update shares and total invested
-                                cost_of_sold_shares = avg_buy_price * shares_sold
-                                company["shares"] = current_shares - shares_sold
-                                company["total_invested"] = current_total_invested - cost_of_sold_shares
-                                
-                                # Update buy price for remaining shares
-                                if company["shares"] > 0:
-                                    company["buy_price"] = company["total_invested"] / company["shares"]
-                                else:
-                                    company["buy_price"] = 0
-                                    company["total_invested"] = 0
-                                    company["profit_until_now"] = 0
-                                    company["loss_until_now"] = 0
-                                
-                                # Log transaction
-                                transaction = {
-                                    "company_id": company["id"],
-                                    "type": "sell",
-                                    "amount": total_sold_amt,
-                                    "shares": shares_sold,
-                                    "price_per_share": sell_price_per_share,
-                                    "date": datetime.date.today().strftime("%Y-%m-%d"),
-                                    "profit_loss": pl
-                                }
-                                st.session_state.data["transactions"].append(transaction)
-                                
-                                save_data(st.session_state.data)
-                                st.success(f"Sold {shares_sold} shares of {selected_company} for {currency_symbol}{total_sold_amt:.2f}!")
-                                st.session_state[f"sell_form_{selected_company_data['ID']}"] = False
-                                st.rerun()
-                
-                # Invest More Form
-                if st.session_state.get(f"invest_form_{selected_company_data['ID']}", False):
-                    with st.form(f"invest_more_form_{selected_company_data['ID']}"):
-                        new_shares = st.number_input("Total Newly Bought Shares", min_value=1, step=1)
-                        buy_price_per_share = st.number_input("Buy Price per Share", min_value=0.00, format="%.2f")
-                        total_new_amount = new_shares * buy_price_per_share
-                        st.write(f"Total Investment: {currency_symbol}{total_new_amount:.2f}")
-                        submit_invest = st.form_submit_button("Confirm Investment")
-                        
-                        if submit_invest and total_new_amount > 0 and new_shares > 0:
-                            company = next((c for c in st.session_state.data["companies"] if c["id"] == selected_company_data["ID"]), None)
-                            if company:
-                                # Initialize total_invested if missing
-                                if "total_invested" not in company:
-                                    company["total_invested"] = 0.0
-                                
-                                # Update total invested and shares
-                                company["total_invested"] += total_new_amount
-                                company["shares"] = company.get("shares", 0) + new_shares
-                                
-                                # Update average buy price
-                                company["buy_price"] = company["total_invested"] / company["shares"] if company["shares"] > 0 else 0
-                                
-                                # Log transaction
-                                transaction = {
-                                    "company_id": company["id"],
-                                    "type": "buy",
-                                    "amount": total_new_amount,
-                                    "shares": new_shares,
-                                    "price_per_share": buy_price_per_share,
-                                    "date": datetime.date.today().strftime("%Y-%m-%d"),
-                                    "profit_loss": 0.0
-                                }
-                                st.session_state.data["transactions"].append(transaction)
-                                
-                                save_data(st.session_state.data)
-                                st.success(f"Invested {currency_symbol}{total_new_amount:.2f} in {new_shares} shares of {selected_company}!")
-                                st.session_state[f"invest_form_{selected_company_data['ID']}"] = False
-                                st.rerun()
+            # Update company data
+            if transaction_type == "Buy":
+                company["shares"] = company.get("shares", 0) + shares
+                company["total_invested"] = company.get("total_invested", 0) + amount
+                company["buy_price"] = price_per_share if company["shares"] == shares else (
+                    (company.get("buy_price", 0) * company.get("shares", 0) + amount) / company["shares"]
+                )
+                company["purchase_date"] = transaction_date.strftime("%Y-%m-%d")
+            elif transaction_type == "Sell":
+                if shares > company.get("shares", 0):
+                    st.error("Cannot sell more shares than owned!")
+                else:
+                    company["shares"] = company.get("shares", 0) - shares
+                    company["total_invested"] = company.get("total_invested", 0) - (shares * company.get("buy_price", 0))
+                    profit_loss = (price_per_share - company.get("buy_price", 0)) * shares
+                    transaction["profit_loss"] = profit_loss
+                    if profit_loss > 0:
+                        company["profit_until_now"] = company.get("profit_until_now", 0) + profit_loss
+                    else:
+                        company["loss_until_now"] = company.get("loss_until_now", 0) + abs(profit_loss)
+                    if company["shares"] == 0:
+                        company["total_invested"] = 0
+                        company["buy_price"] = 0
+            
+            # Add transaction to data
+            st.session_state.data["transactions"].append(transaction)
+            save_data(st.session_state.data)
+            st.success(f"Transaction added for {selected_company_name}!")
+            st.rerun()
 
 # Visualize Companies Section
 if st.session_state.show_visualize_companies:
     st.header("Company Investment Analysis")
     
     if not st.session_state.data["companies"]:
-        st.info("No companies added yet. Click 'Add Company' to start tracking stocks.")
+        st.info("No companies added yet. Click 'Add Company' or 'Add IPOs' to start tracking stocks.")
     else:
         sectors = ["All Sectors"] + st.session_state.data["sectors"]
         sector_key = "visualize_sector_filter"
@@ -1136,7 +1346,7 @@ if st.session_state.show_hx_cat:
     st.header("HX-CAT Companies")
     
     if not st.session_state.data["companies"]:
-        st.info("No companies added yet. Click 'Add Company' to start tracking stocks.")
+        st.info("No companies added yet. Click 'Add Company' or 'Add IPOs' to start tracking stocks.")
     else:
         data = []
         for company in st.session_state.data["companies"]:
@@ -1164,7 +1374,7 @@ if st.session_state.show_invest_companies:
     st.header("Invested Companies")
     
     if not st.session_state.data["companies"]:
-        st.info("No companies added yet. Click 'Add Company' to start tracking stocks.")
+        st.info("No companies added yet. Click 'Add Company' or 'Add IPOs' to start tracking stocks.")
     else:
         sectors = ["All Sectors"] + st.session_state.data["sectors"]
         sector_key = "invest_companies_sector_filter"
@@ -1212,7 +1422,7 @@ if st.session_state.show_high_return:
     st.header("High Return Stocks")
     
     if not st.session_state.data["companies"]:
-        st.info("No companies added yet. Click 'Add Company' to start tracking stocks.")
+        st.info("No companies added yet. Click 'Add Company' or 'Add IPOs' to start tracking stocks.")
     else:
         sectors = ["All Sectors"] + st.session_state.data["sectors"]
         sector_key = "high_return_sector_filter"
@@ -1255,9 +1465,63 @@ if st.session_state.view_mode:
     if not st.session_state.data["sectors"]:
         st.info("No sectors added yet. Click 'Add Sector' to get started.")
     elif not st.session_state.data["companies"]:
-        st.info("No companies added yet. Click 'Add Company' to start tracking stocks.")
+        st.info("No companies added yet. Click 'Add Company' or 'Add IPOs' to start tracking stocks.")
     else:
-        if st.session_state.selected_sector_for_view is None:
+        # Check if viewing company details
+        if "view_company_details" in st.session_state and st.session_state.view_company_details:
+            company = next((c for c in st.session_state.data["companies"] if c["id"] == st.session_state.view_company_details), None)
+            if company:
+                st.markdown('<div class="company-details-container">', unsafe_allow_html=True)
+                st.subheader(f"Details for {company['name']}")
+                is_ipo = company.get("is_ipo", bool(company.get("listing_price", 0) > 0))
+                current_price = get_current_stock_price(company["ticker"])
+                day_return, day_return_msg = get_today_return(company["ticker"])
+                buy_price = company.get("buy_price", 0)
+                shares = company.get("shares", 0)
+                total_invested = company.get("total_invested", buy_price * shares)
+                currency_symbol = "₹" if company["ticker"].endswith(('.NS', '.BO')) else "$"
+                ticker_suffix = "NS" if company["ticker"].endswith(".NS") else "BO" if company["ticker"].endswith(".BO") else "Other"
+                
+                pl_data = None
+                if current_price and shares > 0:
+                    pl_data = calculate_profit_loss(buy_price, shares, current_price)
+                
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.markdown(f"**Company Name**: {company['name']}")
+                    st.markdown(f"**Sector**: {company['sector']}")
+                    st.markdown(f"**Ticker Code**: {company['ticker']}")
+                    st.markdown(f"**Ticker Suffix**: {ticker_suffix}")
+                    st.markdown(f"**Number of Shares**: {shares}")
+                    st.markdown(f"**Each Share Price (Buy)**: {currency_symbol}{buy_price:.2f}")
+                with col2:
+                    st.markdown(f"**Day Change**: {day_return}% {'(N/A: ' + day_return_msg + ')' if day_return is None else ''}")
+                    st.markdown(f"**Current Value**: {currency_symbol}{pl_data['current_value']:.2f} {'(N/A)' if not pl_data else ''}")
+                    st.markdown(f"**P/L**: {currency_symbol}{pl_data['profit_loss']:.2f} {'(N/A)' if not pl_data else ''}")
+                    st.markdown(f"**P/L %**: {pl_data['profit_loss_percent']:.2f}% {'(N/A)' if not pl_data else ''}")
+                    st.markdown(f"**Type**: {'IPO' if is_ipo else 'Regular'}")
+                
+                if is_ipo:
+                    st.markdown('<div class="ipo-details-container">', unsafe_allow_html=True)
+                    st.subheader("IPO Details")
+                    col3, col4 = st.columns(2)
+                    with col3:
+                        st.markdown(f"**Listing Price**: {currency_symbol}{company.get('listing_price', 0):.2f}")
+                        st.markdown(f"**Issue Price**: {currency_symbol}{company.get('issue_price', 0):.2f}")
+                    with col4:
+                        st.markdown(f"**Issue Size**: {company.get('issue_size', 0)}")
+                        st.markdown(f"**Listed Date**: {company.get('listed_date', 'N/A')}")
+                        if company.get("grow_link"):
+                            st.markdown(f"**Grow Link**: [{company['grow_link']}]({company['grow_link']})")
+                    st.markdown('</div>', unsafe_allow_html=True)
+                
+                if st.button("Back to Sector"):
+                    st.session_state.view_company_details = None
+                    st.rerun()
+                st.markdown('</div>', unsafe_allow_html=True)
+        
+        # Sector selection or table view
+        elif st.session_state.selected_sector_for_view is None:
             st.subheader("Select a Sector to View")
             
             cols = st.columns(3)
@@ -1292,34 +1556,54 @@ if st.session_state.view_mode:
             else:
                 sector_invested = sum(c.get("total_invested", c.get("buy_price", 0) * c.get("shares", 0)) for c in sector_companies)
                 sector_current_value = 0
-                sector_daily_change = 0
+                sector_pl = 0
+                
+                # Sector metrics
+                st.markdown('<div class="sector-metrics-container">', unsafe_allow_html=True)
+                col1, col2, col3, col4 = st.columns(4)
+                with col1:
+                    st.metric("Total Invested", f"₹{sector_invested:.2f}")
+                with col2:
+                    st.metric("Current Value", f"₹{sector_current_value:.2f}")
+                with col3:
+                    st.metric("Profit/Loss", f"₹{sector_pl:.2f}")
+                with col4:
+                    st.metric("Companies", len(sector_companies))
+                st.markdown('</div>', unsafe_allow_html=True)
                 
                 data = []
                 for company in sector_companies:
                     current_price = get_current_stock_price(company["ticker"])
-                    day_return, day_period = get_today_return(company["ticker"])
+                    day_return, day_return_msg = get_today_return(company["ticker"])
                     
                     buy_price = company.get("buy_price", 0)
                     shares = company.get("shares", 0)
                     total_invested = company.get("total_invested", buy_price * shares)
                     purchase_date = company.get("purchase_date", "N/A")
+                    is_ipo = company.get("is_ipo", bool(company.get("listing_price", 0) > 0))
                     
                     pl_data = None
                     if current_price and shares > 0:
                         pl_data = calculate_profit_loss(total_invested / shares if shares > 0 else 0, shares, current_price)
                         sector_current_value += pl_data["current_value"] if pl_data else 0
+                        sector_pl += pl_data["profit_loss"] if pl_data else 0
                     
                     currency_symbol = "₹" if company["ticker"].endswith(('.NS', '.BO')) else "$"
+                    ticker_suffix = "NS" if company["ticker"].endswith(".NS") else "BO" if company["ticker"].endswith(".BO") else "Other"
                     
                     company_data = {
                         "Company": company["name"],
                         "Ticker": company["ticker"],
+                        "Type": "IPO" if is_ipo else "Regular",
                         "Purchase Date": purchase_date,
                         "Current Price": f"{currency_symbol}{current_price:.2f}" if current_price else "N/A",
                         "Buy Price": f"{currency_symbol}{buy_price:.2f}",
                         "Shares": shares,
-                        "Day Change": f"{day_return}%" if day_return is not None else "N/A",
+                        "Day Change": f"{day_return}%" if day_return is not None else f"N/A ({day_return_msg})",
                         "Invested": f"{currency_symbol}{total_invested:.2f}",
+                        "Ticker Suffix": ticker_suffix,
+                        "ID": company["id"],
+                        "Actions": ""
                     }
                     
                     if pl_data:
@@ -1337,9 +1621,8 @@ if st.session_state.view_mode:
                         
                     data.append(company_data)
                 
-                sector_pl = sector_current_value - sector_invested
-                sector_pl_pct = (sector_pl / sector_invested * 100) if sector_invested > 0 else 0
-                
+                # Update sector metrics
+                st.markdown('<div class="sector-metrics-container">', unsafe_allow_html=True)
                 col1, col2, col3, col4 = st.columns(4)
                 with col1:
                     st.metric("Total Invested", f"₹{sector_invested:.2f}")
@@ -1347,166 +1630,257 @@ if st.session_state.view_mode:
                     st.metric("Current Value", f"₹{sector_current_value:.2f}")
                 with col3:
                     pl_label = "Profit" if sector_pl >= 0 else "Loss"
-                    st.metric(pl_label, f"₹{abs(sector_pl):.2f}", 
-                             f"{sector_pl_pct:.2f}%", 
-                             delta_color="normal" if sector_pl >= 0 else "inverse")
+                    sector_pl_pct = (sector_pl / sector_invested * 100) if sector_invested > 0 else 0
+                    st.metric(pl_label, f"₹{abs(sector_pl):.2f}", f"{sector_pl_pct:.2f}%", 
+                              delta_color="normal" if sector_pl >= 0 else "inverse")
                 with col4:
-                    st.metric("Holdings", f"{len(sector_companies)} Stocks")
+                    st.metric("Companies", len(sector_companies))
+                st.markdown('</div>', unsafe_allow_html=True)
                 
-                st.subheader(f"Companies in {selected_sector}")
-                df = pd.DataFrame(data)
-                st.dataframe(df, use_container_width=True)
-
-# Main content area - Display stocks by sector
-if not any([st.session_state.view_mode, st.session_state.show_high_return, 
-            st.session_state.show_hx_cat, st.session_state.show_invest_companies,
-            st.session_state.show_visualize_companies, st.session_state.show_journal_ledger,
-            st.session_state.edit_company]):
-    st.header("Stocks by Sector")
-
-    if st.session_state.data["companies"]:
-        total_invested = 0
-        total_current_value = 0
-        
-        for company in st.session_state.data["companies"]:
-            total_invested_company = company.get("total_invested", company.get("buy_price", 0) * company.get("shares", 0))
-            shares = company.get("shares", 0)
-            current_price = get_current_stock_price(company["ticker"])
-            
-            if total_invested_company > 0 and shares > 0 and current_price:
-                total_invested += total_invested_company
-                current_val = current_price * shares
-                total_current_value += current_val
-        
-        total_profit_loss = total_current_value - total_invested
-        total_profit_loss_percent = (total_profit_loss / total_invested * 100) if total_invested > 0 else 0
-        
-        st.subheader("Portfolio Summary")
-        col1, col2, col3, col4 = st.columns(4)
-        
-        with col1:
-            st.metric("Total Invested", f"₹{total_invested:.2f}")
-        with col2:
-            st.metric("Current Value", f"₹{total_current_value:.2f}")
-        with col3:
-            pl_label = "Profit" if total_profit_loss >= 0 else "Loss"
-            st.metric(pl_label, f"₹{abs(total_profit_loss):.2f}", 
-                     f"{total_profit_loss_percent:.2f}%", 
-                     delta_color="normal" if total_profit_loss >= 0 else "inverse")
-        with col4:
-            st.metric("Holdings", f"{len(st.session_state.data['companies'])} Stocks")
-
-    if not st.session_state.data["sectors"]:
-        st.info("No sectors added yet. Click 'Add Sector' to get started.")
-    elif not st.session_state.data["companies"]:
-        st.info("No companies added yet. Click 'Add Company' to start tracking stocks.")
-    else:
-        for sector in st.session_state.data["sectors"]:
-            sector_companies = [company for company in st.session_state.data["companies"] 
-                               if company["sector"] == sector]
-            
-            if sector_companies:
-                sector_invested = sum(company.get("total_invested", company.get("buy_price", 0) * company.get("shares", 0)) 
-                                     for company in sector_companies)
+                # Companies table
+                st.markdown('<div class="table-container">', unsafe_allow_html=True)
+                st.subheader("Companies in Sector")
+                # Header row
+                st.markdown('<div class="table-row">', unsafe_allow_html=True)
+                cols = st.columns([2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2])
+                headers = ["Company", "Ticker", "Type", "Purchase Date", "Current Price", "Buy Price", 
+                           "Shares", "Day Change", "Current Value", "P/L", "Actions"]
+                for col, header in zip(cols, headers):
+                    with col:
+                        st.markdown(f'<div class="table-cell"><b>{header}</b></div>', unsafe_allow_html=True)
+                st.markdown('</div>', unsafe_allow_html=True)
                 
-                with st.expander(f"{sector} ({len(sector_companies)} companies)", expanded=True):
-                    data = []
-                    for company in sector_companies:
-                        price = get_current_stock_price(company["ticker"])
-                        day_return, day_period = get_today_return(company["ticker"])
-                        
-                        buy_price = company.get("buy_price", 0)
-                        shares = company.get("shares", 0)
-                        total_invested = company.get("total_invested", buy_price * shares)
-                        purchase_date = company.get("purchase_date", "N/A")
-                        
-                        pl_data = None
-                        if price and shares > 0:
-                            pl_data = calculate_profit_loss(total_invested / shares if shares > 0 else 0, shares, price)
-                        
-                        currency_symbol = "₹" if company["ticker"].endswith(('.NS', '.BO')) else "$"
-                        
-                        company_data = {
-                            "Company": company["name"],
-                            "Ticker": company["ticker"],
-                            "Purchase Date": purchase_date,
-                            "Current Price": f"{currency_symbol}{price:.2f}" if price else "N/A",
-                            "Buy Price": f"{currency_symbol}{buy_price:.2f}",
-                            "Shares": shares,
-                            "Day Change": f"{day_return}%" if day_return is not None else "N/A",
-                            "Invested": f"{currency_symbol}{total_invested:.2f}",
-                            "ID": company["id"]
-                        }
-                        
-                        if pl_data:
-                            company_data.update({
-                                "Current Value": f"{currency_symbol}{pl_data['current_value']:.2f}",
-                                "P/L": f"{currency_symbol}{pl_data['profit_loss']:.2f}",
-                                "P/L %": f"{pl_data['profit_loss_percent']:.2f}%"
-                            })
-                        else:
-                            company_data.update({
-                                "Current Value": "N/A",
-                                "P/L": "N/A",
-                                "P/L %": "N/A"
-                            })
-                            
-                        data.append(company_data)
-                    
-                    df = pd.DataFrame(data)
-                    st.dataframe(df.drop(columns=["ID"]), use_container_width=True)
-                    
-                    col1, col2, col3 = st.columns([2, 1, 1])
-                    with col2:
-                        company_to_delete = st.selectbox(f"Select company to remove from {sector}", 
-                                                        [c["name"] for c in sector_companies],
-                                                        key=f"delete_{sector}")
-                        if st.button("Remove Company", key=f"remove_{sector}"):
-                            company_index = next((i for i, c in enumerate(st.session_state.data["companies"])
-                                                if c["name"] == company_to_delete), None)
-                            if company_index is not None:
-                                st.session_state.data["companies"].pop(company_index)
-                                save_data(st.session_state.data)
-                                st.success(f"Removed {company_to_delete} from tracking")
+                # Data rows
+                for company_data in data:
+                    is_ipo = company_data["Type"] == "IPO"
+                    st.markdown('<div class="table-row">', unsafe_allow_html=True)
+                    cols = st.columns([2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2])
+                    with cols[0]:
+                        st.markdown(
+                            f'<div class="table-cell"><span style="color: {"#00FF00" if is_ipo else "#1E3A8A"}; font-weight: {"bold" if is_ipo else "normal"};">{company_data["Company"]}</span></div>',
+                            unsafe_allow_html=True
+                        )
+                    with cols[1]:
+                        st.markdown(f'<div class="table-cell">{company_data["Ticker"]}</div>', unsafe_allow_html=True)
+                    with cols[2]:
+                        st.markdown(f'<div class="table-cell">{company_data["Type"]}</div>', unsafe_allow_html=True)
+                    with cols[3]:
+                        st.markdown(f'<div class="table-cell">{company_data["Purchase Date"]}</div>', unsafe_allow_html=True)
+                    with cols[4]:
+                        st.markdown(f'<div class="table-cell">{company_data["Current Price"]}</div>', unsafe_allow_html=True)
+                    with cols[5]:
+                        st.markdown(f'<div class="table-cell">{company_data["Buy Price"]}</div>', unsafe_allow_html=True)
+                    with cols[6]:
+                        st.markdown(f'<div class="table-cell">{company_data["Shares"]}</div>', unsafe_allow_html=True)
+                    with cols[7]:
+                        st.markdown(f'<div class="table-cell">{company_data["Day Change"]}</div>', unsafe_allow_html=True)
+                    with cols[8]:
+                        st.markdown(f'<div class="table-cell">{company_data["Current Value"]}</div>', unsafe_allow_html=True)
+                    with cols[9]:
+                        st.markdown(f'<div class="table-cell">{company_data["P/L"]}</div>', unsafe_allow_html=True)
+                    with cols[10]:
+                        st.markdown('<div class="table-cell">', unsafe_allow_html=True)
+                        col_edit, col_remove, col_view = st.columns(3)
+                        with col_edit:
+                            if st.button("Edit", key=f"edit_{company_data['ID']}"):
+                                toggle_edit_company(company_data["ID"])
                                 st.rerun()
-                    with col3:
-                        company_to_edit = st.selectbox(f"Select company to edit in {sector}", 
-                                                      [c["name"] for c in sector_companies],
-                                                      key=f"edit_select_{sector}")
-                        if st.button("Edit Company", key=f"edit_{sector}"):
-                            company_id = next(c["id"] for c in sector_companies if c["name"] == company_to_edit)
-                            toggle_edit_company(company_id)
-                            st.rerun()
+                        with col_remove:
+                            if st.button("Remove", key=f"remove_{company_data['ID']}"):
+                                st.session_state.data["companies"] = [
+                                    c for c in st.session_state.data["companies"] if c["id"] != company_data["ID"]
+                                ]
+                                st.session_state.data["transactions"] = [
+                                    t for t in st.session_state.data["transactions"] if t["company_id"] != company_data["ID"]
+                                ]
+                                save_data(st.session_state.data)
+                                st.success(f"Company '{company_data['Company']}' removed successfully!")
+                                st.rerun()
+                        with col_view:
+                            if st.button("View", key=f"view_details_{company_data['ID']}"):
+                                st.session_state.view_company_details = company_data["ID"]
+                                st.session_state.selected_sector_for_view = None
+                                st.rerun()
+                        st.markdown('</div>', unsafe_allow_html=True)
+                    st.markdown('</div>', unsafe_allow_html=True)
+                st.markdown('</div>', unsafe_allow_html=True)
 
-# Sector Management
-st.sidebar.header("Manage Sectors")
-if st.session_state.data["sectors"]:
-    sector_to_delete = st.sidebar.selectbox("Select sector to delete", st.session_state.data["sectors"])
-    if st.sidebar.button("Delete Sector"):
-        companies_in_sector = [c for c in st.session_state.data["companies"] if c["sector"] == sector_to_delete]
-        if companies_in_sector:
-            st.sidebar.error(f"Cannot delete sector '{sector_to_delete}' because it contains {len(companies_in_sector)} companies. Remove them first.")
-        else:
-            st.session_state.data["sectors"].remove(sector_to_delete)
-            save_data(st.session_state.data)
-            st.sidebar.success(f"Deleted sector '{sector_to_delete}'")
+# Main Page (Home)
+if not any([
+    st.session_state.add_sector_clicked,
+    st.session_state.add_company_clicked,
+    st.session_state.add_ipo_clicked,
+    st.session_state.view_mode,
+    st.session_state.show_high_return,
+    st.session_state.show_hx_cat,
+    st.session_state.show_invest_companies,
+    st.session_state.show_visualize_companies,
+    st.session_state.show_journal_ledger,
+    st.session_state.edit_company
+]):
+    st.header("Portfolio Dashboard")
+    
+    if not st.session_state.data["companies"]:
+        st.info("No companies added yet. Click 'Add Company' or 'Add IPOs' to start tracking stocks.")
+    else:
+        # Debug buttons
+        if st.button("Debug: List Tickers"):
+            st.write([c["ticker"] for c in st.session_state.data["companies"]])
+        if st.button("Debug: Clear Cache"):
+            st.session_state.return_cache = {}
             st.rerun()
-else:
-    st.sidebar.info("No sectors available to delete.")
-
-# Current date display
-current_date = datetime.datetime.now().strftime("%A, %d %B %Y")
-st.sidebar.markdown(f"**Today's Date:** {current_date}")
-
-# About section in sidebar
-st.sidebar.markdown("---")
-st.sidebar.header("About")
-st.sidebar.info("""
-This app allows you to track stock prices by sector.
-1. Add sectors to organize your stocks
-2. Add companies with their ticker codes
-3. View current prices and profit/loss information
-4. Monitor daily returns and overall portfolio performance
-5. Visualize investment weightage by sector or market cap
-6. Manage transactions with Journal & Ledger
-""")
+        
+        # Prepare data for all components
+        component_data = []
+        for company in st.session_state.data["companies"]:
+            day_return, day_return_msg = get_today_return(company["ticker"])
+            current_price = get_current_stock_price(company["ticker"])
+            buy_price = company.get("buy_price", 0)
+            shares = company.get("shares", 0)
+            total_invested = company.get("total_invested", buy_price * shares)
+            currency_symbol = "₹" if company["ticker"].endswith(('.NS', '.BO')) else "$"
+            
+            pl_data = calculate_profit_loss(buy_price, shares, current_price) if current_price and shares > 0 else None
+            
+            company_data = {
+                "Company": company["name"],
+                "Sector": company["sector"],
+                "Day Change (%)": day_return if day_return is not None else None,
+                "Day Change Display": f"{day_return:.2f}%" if day_return is not None else f"N/A ({day_return_msg})",
+                "P/L": pl_data["profit_loss"] if pl_data else 0,
+                "P/L %": pl_data["profit_loss_percent"] if pl_data else 0,
+                "Invested Amount": total_invested,
+                "Shares": shares,
+                "HX-CAT": company.get("hx_cat", False),
+                "Formatted P/L": f"{currency_symbol}{pl_data['profit_loss']:.2f}" if pl_data else "N/A",
+                "Formatted Invested": f"{currency_symbol}{total_invested:.2f}"
+            }
+            if day_return is None:
+                print(f"Day Change N/A for {company['ticker']}: {day_return_msg}")
+            component_data.append(company_data)
+        
+        df_all = pd.DataFrame(component_data)
+        
+        # Component 1: Top 5 Companies by High Day Change (shares > 0)
+        with st.container():
+            st.subheader("Top 5 Companies by High Day Change (Holding)")
+            df_filtered = df_all[df_all["Shares"] > 0]
+            if not df_filtered.empty and df_filtered["Day Change (%)"].notna().any():
+                df_sorted = df_filtered.sort_values(by="Day Change (%)", ascending=False).head(5)
+                st.dataframe(
+                    df_sorted[["Company", "Sector", "Day Change Display", "Formatted P/L", "P/L %", "Formatted Invested"]],
+                    use_container_width=True,
+                    column_config={
+                        "Company": st.column_config.TextColumn(label="Company"),
+                        "Sector": st.column_config.TextColumn(label="Sector"),
+                        "Day Change Display": st.column_config.TextColumn(label="Day Change"),
+                        "Formatted P/L": st.column_config.TextColumn(label="P/L"),
+                        "P/L %": st.column_config.NumberColumn(label="P/L %", format="%.2f"),
+                        "Formatted Invested": st.column_config.TextColumn(label="Invested Amount")
+                    }
+                )
+            else:
+                st.info("No companies with valid day change data and holdings.")
+        
+        # Component 2: Top 5 Companies by High P/L% (shares > 0)
+        with st.container():
+            st.subheader("Top 5 Companies by High P/L% (Holding)")
+            df_filtered = df_all[df_all["Shares"] > 0]
+            if not df_filtered.empty and df_filtered["P/L %"].notna().any():
+                df_sorted = df_filtered.sort_values(by="P/L %", ascending=False).head(5)
+                st.dataframe(
+                    df_sorted[["Company", "Sector", "Day Change Display", "P/L %", "Formatted P/L", "Formatted Invested"]],
+                    use_container_width=True,
+                    column_config={
+                        "Company": st.column_config.TextColumn(label="Company"),
+                        "Sector": st.column_config.TextColumn(label="Sector"),
+                        "Day Change Display": st.column_config.TextColumn(label="Day Change"),
+                        "P/L %": st.column_config.NumberColumn(label="P/L %", format="%.2f"),
+                        "Formatted P/L": st.column_config.TextColumn(label="P/L"),
+                        "Formatted Invested": st.column_config.TextColumn(label="Invested Amount")
+                    }
+                )
+            else:
+                st.info("No companies with valid P/L% data and holdings.")
+        
+        # Component 3: Top 5 HX-Category Companies by High Day Change
+        with st.container():
+            st.subheader("Top 5 HX-Category Companies by High Day Change")
+            df_filtered = df_all[df_all["HX-CAT"] == True]
+            if not df_filtered.empty and df_filtered["Day Change (%)"].notna().any():
+                df_sorted = df_filtered.sort_values(by="Day Change (%)", ascending=False).head(5)
+                st.dataframe(
+                    df_sorted[["Company", "Sector", "Day Change Display", "P/L %", "Formatted P/L", "Formatted Invested"]],
+                    use_container_width=True,
+                    column_config={
+                        "Company": st.column_config.TextColumn(label="Company"),
+                        "Sector": st.column_config.TextColumn(label="Sector"),
+                        "Day Change Display": st.column_config.TextColumn(label="Day Change"),
+                        "P/L %": st.column_config.NumberColumn(label="P/L %", format="%.2f"),
+                        "Formatted P/L": st.column_config.TextColumn(label="P/L"),
+                        "Formatted Invested": st.column_config.TextColumn(label="Invested Amount")
+                    }
+                )
+            else:
+                st.info("No HX-Category companies with valid day change data.")
+        
+        # Component 4: Top 5 HX-Category Companies by Low Day Change
+        with st.container():
+            st.subheader("Top 5 HX-Category Companies by Low Day Change")
+            df_filtered = df_all[df_all["HX-CAT"] == True]
+            if not df_filtered.empty and df_filtered["Day Change (%)"].notna().any():
+                df_sorted = df_filtered.sort_values(by="Day Change (%)", ascending=True).head(5)
+                st.dataframe(
+                    df_sorted[["Company", "Sector", "Day Change Display", "P/L %", "Formatted P/L", "Formatted Invested"]],
+                    use_container_width=True,
+                    column_config={
+                        "Company": st.column_config.TextColumn(label="Company"),
+                        "Sector": st.column_config.TextColumn(label="Sector"),
+                        "Day Change Display": st.column_config.TextColumn(label="Day Change"),
+                        "P/L %": st.column_config.NumberColumn(label="P/L %", format="%.2f"),
+                        "Formatted P/L": st.column_config.TextColumn(label="P/L"),
+                        "Formatted Invested": st.column_config.TextColumn(label="Invested Amount")
+                    }
+                )
+            else:
+                st.info("No HX-Category companies with valid day change data.")
+        
+        # Component 5: Top 10 Companies by High Day Change
+        with st.container():
+            st.subheader("Top 10 Companies by High Day Change (All)")
+            if not df_all.empty and df_all["Day Change (%)"].notna().any():
+                df_sorted = df_all.sort_values(by="Day Change (%)", ascending=False).head(10)
+                st.dataframe(
+                    df_sorted[["Company", "Sector", "Day Change Display", "P/L %", "Formatted P/L", "Formatted Invested"]],
+                    use_container_width=True,
+                    column_config={
+                        "Company": st.column_config.TextColumn(label="Company"),
+                        "Sector": st.column_config.TextColumn(label="Sector"),
+                        "Day Change Display": st.column_config.TextColumn(label="Day Change"),
+                        "P/L %": st.column_config.NumberColumn(label="P/L %", format="%.2f"),
+                        "Formatted P/L": st.column_config.TextColumn(label="P/L"),
+                        "Formatted Invested": st.column_config.TextColumn(label="Invested Amount")
+                    }
+                )
+            else:
+                st.info("No companies with valid day change data.")
+        
+        # Component 6: Top 10 Companies by Low Day Change
+        with st.container():
+            st.subheader("Top 10 Companies by Low Day Change (All)")
+            if not df_all.empty and df_all["Day Change (%)"].notna().any():
+                df_sorted = df_all.sort_values(by="Day Change (%)", ascending=True).head(10)
+                st.dataframe(
+                    df_sorted[["Company", "Sector", "Day Change Display", "P/L %", "Formatted P/L", "Formatted Invested"]],
+                    use_container_width=True,
+                    column_config={
+                        "Company": st.column_config.TextColumn(label="Company"),
+                        "Sector": st.column_config.TextColumn(label="Sector"),
+                        "Day Change Display": st.column_config.TextColumn(label="Day Change"),
+                        "P/L %": st.column_config.NumberColumn(label="P/L %", format="%.2f"),
+                        "Formatted P/L": st.column_config.TextColumn(label="P/L"),
+                        "Formatted Invested": st.column_config.TextColumn(label="Invested Amount")
+                    }
+                )
+            else:
+                st.info("No companies with valid day change data.")
