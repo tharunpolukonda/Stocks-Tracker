@@ -45,19 +45,6 @@
             "loss_until_now": 0.0
         },
         {
-            "id": "059073ea-c28d-43c3-8d30-10d9bbd92c1e",
-            "name": "Anant Raj Ltd",
-            "ticker": "ANANTRAJ.NS",
-            "sector": "Construction Buildings & Real-Estate",
-            "buy_price": 442.09,
-            "shares": 3,
-            "purchase_date": "2025-02-16",
-            "hx_cat": true,
-            "total_invested": 1326.27,
-            "profit_until_now": 0.0,
-            "loss_until_now": 183.39999999999998
-        },
-        {
             "id": "68106504-90c7-441b-954f-d56fe5f84899",
             "name": "Zydus Lifesciences Ltd",
             "ticker": "ZYDUSLIFE.NS",
