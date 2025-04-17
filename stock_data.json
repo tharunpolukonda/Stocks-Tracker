@@ -120,12 +120,12 @@
             "name": "Tata Consultancy Services Ltd",
             "ticker": "TCS.NS",
             "sector": "IT & Tech",
-            "buy_price": 2000.0,
-            "shares": 5,
+            "buy_price": 0,
+            "shares": 0,
             "purchase_date": "2025-04-02",
             "hx_cat": true,
-            "total_invested": 10000.0,
-            "profit_until_now": 0.0,
+            "total_invested": 0,
+            "profit_until_now": 5000.0,
             "loss_until_now": 0.0,
             "listing_price": 0.0,
             "issue_price": 0.0,
@@ -422,6 +422,15 @@
             "price_per_share": 1000.0,
             "date": "2025-04-03",
             "profit_loss": 0.0
+        },
+        {
+            "company_id": "c80a5bfd-a361-4d62-9e5b-4e08821be191",
+            "type": "sell",
+            "amount": 15000.0,
+            "shares": 5,
+            "price_per_share": 3000.0,
+            "date": "2025-04-17",
+            "profit_loss": 5000.0
         }
     ]
 }
