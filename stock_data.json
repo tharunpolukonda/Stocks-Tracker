@@ -23,13 +23,13 @@
             "name": "NCC Ltd",
             "ticker": "NCC.NS",
             "sector": "Construction Buildings & Real-Estate",
-            "buy_price": 212.56,
-            "shares": 5,
+            "buy_price": 0,
+            "shares": 0,
             "purchase_date": "2025-03-11",
             "hx_cat": true,
-            "total_invested": 1062.8,
-            "profit_until_now": 0.0,
-            "loss_until_now": 0.0
+            "total_invested": 0,
+            "profit_until_now": 0,
+            "loss_until_now": 0
         },
         {
             "id": "68106504-90c7-441b-954f-d56fe5f84899",
@@ -283,6 +283,15 @@
             "price_per_share": 450.0,
             "date": "2025-04-17",
             "profit_loss": 127.41000000000003
+        },
+        {
+            "company_id": "de8f0f0c-48ad-4118-85ef-bffcff505cc6",
+            "type": "sell",
+            "amount": 1500.0,
+            "shares": 5,
+            "price_per_share": 300.0,
+            "date": "2025-04-17",
+            "profit_loss": 437.2
         }
     ]
 }
