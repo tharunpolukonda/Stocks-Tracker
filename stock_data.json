@@ -19,19 +19,6 @@
             "loss_until_now": 0.0
         },
         {
-            "id": "0f274707-9941-4e47-b8d3-2c37c669310f",
-            "name": "Orient Technologies Ltd",
-            "ticker": "ORIENTTECH.NS",
-            "sector": "IT & Tech",
-            "buy_price": 322.59,
-            "shares": 1,
-            "purchase_date": "2025-03-11",
-            "hx_cat": true,
-            "total_invested": 322.59,
-            "profit_until_now": 127.41000000000003,
-            "loss_until_now": 0.0
-        },
-        {
             "id": "de8f0f0c-48ad-4118-85ef-bffcff505cc6",
             "name": "NCC Ltd",
             "ticker": "NCC.NS",
