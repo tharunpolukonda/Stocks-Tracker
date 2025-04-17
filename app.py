@@ -2,16 +2,27 @@ import streamlit as st
 import yfinance as yf
 import pandas as pd
 import json
-import os
 import datetime
 from datetime import timedelta
 import plotly.express as px
 import plotly.graph_objects as go
 import uuid
 import time
+from github import Github
+import base64
 
 # Set page title and configuration
 st.set_page_config(page_title="Sector-based Stock Tracker", layout="wide")
+
+# Access GitHub credentials from secrets
+GITHUB_TOKEN = st.secrets["github"]["token"]
+REPO_NAME = st.secrets["github"]["repo"]
+BRANCH = st.secrets["github"]["branch"]
+FILE_PATH = st.secrets["github"]["file_path"]
+
+# Initialize GitHub client
+g = Github(GITHUB_TOKEN)
+repo = g.get_repo(REPO_NAME)
 
 # Custom CSS for 3D UI with black background and blue-white accents
 st.markdown("""
@@ -188,15 +199,33 @@ st.markdown("""
 
 # Define functions for data management
 def save_data(data):
-    """Save data to a JSON file"""
-    with open('stock_data.json', 'w') as f:
-        json.dump(data, f, indent=4)
-    
+    """Save data to stock_data.json on GitHub"""
+    try:
+        # Get the current file's SHA (required for updates)
+        contents = repo.get_contents(FILE_PATH, ref=BRANCH)
+        repo.update_file(
+            path=FILE_PATH,
+            message="Update stock_data.json with new data",
+            content=json.dumps(data, indent=4),
+            sha=contents.sha,
+            branch=BRANCH
+        )
+    except:
+        # If file doesn't exist, create it
+        repo.create_file(
+            path=FILE_PATH,
+            message="Create stock_data.json",
+            content=json.dumps(data, indent=4),
+            branch=BRANCH
+        )
+
 def load_data():
-    """Load data from JSON file or initialize empty structure"""
-    if os.path.exists('stock_data.json'):
-        with open('stock_data.json', 'r') as f:
-            data = json.load(f)
+    """Load data from stock_data.json on GitHub or initialize empty structure"""
+    try:
+        contents = repo.get_contents(FILE_PATH, ref=BRANCH)
+        # Decode base64 content
+        decoded_content = base64.b64decode(contents.content).decode("utf-8")
+        data = json.loads(decoded_content)
         # Ensure all companies have an 'id' and 'total_invested' field
         for company in data.get("companies", []):
             if "id" not in company:
@@ -229,12 +258,15 @@ def load_data():
                     data["transactions"] = data.get("transactions", []) + [transaction]
         save_data(data)  # Save updated data
         return data
-    else:
-        return {
+    except:
+        # If file doesn't exist or can't be accessed, return empty structure
+        data = {
             "sectors": [],
             "companies": [],
             "transactions": []
         }
+        save_data(data)  # Create the file on GitHub
+        return data
 
 def get_current_stock_price(symbol):
     """Fetch current stock price using yfinance"""
@@ -1286,8 +1318,8 @@ if st.session_state.view_mode:
                         "Current Price": f"{currency_symbol}{current_price:.2f}" if current_price else "N/A",
                         "Buy Price": f"{currency_symbol}{buy_price:.2f}",
                         "Shares": shares,
-                        "Invested": f"{currency_symbol}{total_invested:.2f}",
                         "Day Change": f"{day_return}%" if day_return is not None else "N/A",
+                        "Invested": f"{currency_symbol}{total_invested:.2f}",
                     }
                     
                     if pl_data:
@@ -1460,7 +1492,7 @@ if st.session_state.data["sectors"]:
             st.sidebar.success(f"Deleted sector '{sector_to_delete}'")
             st.rerun()
 else:
-    st.sidebar.info("No sectors to manage")
+    st.sidebar.info("No sectors available to delete.")
 
 # Current date display
 current_date = datetime.datetime.now().strftime("%A, %d %B %Y")
