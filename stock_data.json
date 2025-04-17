@@ -102,11 +102,11 @@
             "name": "Stallion India Fluorochemicals Ltd",
             "ticker": "STALLION.NS",
             "sector": "Gold & Diamonds",
-            "buy_price": 0.0,
-            "shares": 0,
-            "purchase_date": "2025-04-17",
+            "buy_price": 60.77,
+            "shares": 2,
+            "purchase_date": "2025-04-09",
             "hx_cat": true,
-            "total_invested": 0.0,
+            "total_invested": 121.54,
             "profit_until_now": 0.0,
             "loss_until_now": 0.0,
             "listing_price": 120.0,
@@ -458,6 +458,15 @@
             "price_per_share": 500.0,
             "date": "2025-04-17",
             "profit_loss": -1000.0
+        },
+        {
+            "company_id": "32458360-b547-4a13-b1a5-4d8e7d8f5f7e",
+            "type": "buy",
+            "amount": 121.54,
+            "shares": 2,
+            "price_per_share": 60.77,
+            "date": "2025-04-09",
+            "profit_loss": 0.0
         }
     ]
 }
