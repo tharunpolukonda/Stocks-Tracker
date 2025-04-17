@@ -16,7 +16,12 @@
             "hx_cat": true,
             "total_invested": 994.7250000000001,
             "profit_until_now": 205.27500000000003,
-            "loss_until_now": 0.0
+            "loss_until_now": 0.0,
+            "listing_price": 0.0,
+            "issue_price": 0.0,
+            "issue_size": 0,
+            "listed_date": "",
+            "grow_link": ""
         },
         {
             "id": "de8f0f0c-48ad-4118-85ef-bffcff505cc6",
@@ -29,7 +34,12 @@
             "hx_cat": true,
             "total_invested": 0,
             "profit_until_now": 0,
-            "loss_until_now": 0
+            "loss_until_now": 0,
+            "listing_price": 0.0,
+            "issue_price": 0.0,
+            "issue_size": 0,
+            "listed_date": "",
+            "grow_link": ""
         },
         {
             "id": "68106504-90c7-441b-954f-d56fe5f84899",
@@ -42,7 +52,12 @@
             "hx_cat": true,
             "total_invested": 550.0,
             "profit_until_now": 0.0,
-            "loss_until_now": 0.0
+            "loss_until_now": 0.0,
+            "listing_price": 0.0,
+            "issue_price": 0.0,
+            "issue_size": 0,
+            "listed_date": "",
+            "grow_link": ""
         },
         {
             "id": "432bc883-4449-413d-848a-671347e8d65d",
@@ -55,7 +70,12 @@
             "hx_cat": false,
             "total_invested": 1583.85,
             "profit_until_now": 0.0,
-            "loss_until_now": 0.0
+            "loss_until_now": 0.0,
+            "listing_price": 0.0,
+            "issue_price": 0.0,
+            "issue_size": 0,
+            "listed_date": "",
+            "grow_link": ""
         }
     ],
     "transactions": [
