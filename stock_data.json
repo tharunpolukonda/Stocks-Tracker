@@ -24,11 +24,11 @@
             "ticker": "ORIENTTECH.NS",
             "sector": "IT & Tech",
             "buy_price": 322.59,
-            "shares": 2,
+            "shares": 1,
             "purchase_date": "2025-03-11",
             "hx_cat": true,
-            "total_invested": 645.18,
-            "profit_until_now": 0.0,
+            "total_invested": 322.59,
+            "profit_until_now": 127.41000000000003,
             "loss_until_now": 0.0
         },
         {
@@ -287,6 +287,15 @@
             "price_per_share": 400.0,
             "date": "2025-04-17",
             "profit_loss": 205.27500000000003
+        },
+        {
+            "company_id": "0f274707-9941-4e47-b8d3-2c37c669310f",
+            "type": "sell",
+            "amount": 450.0,
+            "shares": 1,
+            "price_per_share": 450.0,
+            "date": "2025-04-17",
+            "profit_loss": 127.41000000000003
         }
     ]
 }
