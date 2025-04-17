@@ -1,7 +1,8 @@
 {
     "sectors": [
         "IT & Tech",
-        "Construction Buildings & Real-Estate"
+        "Construction Buildings & Real-Estate",
+        "Pharma"
     ],
     "companies": [
         {
@@ -55,6 +56,19 @@
             "total_invested": 1326.27,
             "profit_until_now": 0.0,
             "loss_until_now": 183.39999999999998
+        },
+        {
+            "id": "68106504-90c7-441b-954f-d56fe5f84899",
+            "name": "Zydus Lifesciences Ltd",
+            "ticker": "ZYDUSLIFE.NS",
+            "sector": "Pharma",
+            "buy_price": 550.0,
+            "shares": 1,
+            "purchase_date": "2023-06-20",
+            "hx_cat": true,
+            "total_invested": 550.0,
+            "profit_until_now": 0.0,
+            "loss_until_now": 0.0
         }
     ],
     "transactions": [
@@ -245,6 +259,15 @@
             "shares": 1,
             "price_per_share": 336.0,
             "date": "2025-04-15",
+            "profit_loss": 0.0
+        },
+        {
+            "company_id": "68106504-90c7-441b-954f-d56fe5f84899",
+            "type": "buy",
+            "amount": 550.0,
+            "shares": 1,
+            "price_per_share": 550.0,
+            "date": "2023-06-20",
             "profit_loss": 0.0
         }
     ]
