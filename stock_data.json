@@ -150,6 +150,24 @@
             "issue_size": 0,
             "listed_date": "",
             "grow_link": ""
+        },
+        {
+            "id": "5106633e-f7fd-4c03-8310-30baba70e2af",
+            "name": "Kalyan Jewellers India Ltd",
+            "ticker": "KALYANKJIL.NS",
+            "sector": "Gold & Diamonds",
+            "buy_price": 480.0,
+            "shares": 3,
+            "purchase_date": "2025-04-02",
+            "hx_cat": true,
+            "total_invested": 1440.0,
+            "profit_until_now": 0.0,
+            "loss_until_now": 0.0,
+            "listing_price": 0.0,
+            "issue_price": 0.0,
+            "issue_size": 0,
+            "listed_date": "",
+            "grow_link": ""
         }
     ],
     "transactions": [
@@ -466,6 +484,15 @@
             "shares": 2,
             "price_per_share": 60.77,
             "date": "2025-04-09",
+            "profit_loss": 0.0
+        },
+        {
+            "company_id": "5106633e-f7fd-4c03-8310-30baba70e2af",
+            "type": "buy",
+            "amount": 1440.0,
+            "shares": 3,
+            "price_per_share": 480.0,
+            "date": "2025-04-02",
             "profit_loss": 0.0
         }
     ]
