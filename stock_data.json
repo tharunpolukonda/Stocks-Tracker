@@ -48,13 +48,13 @@
             "name": "Zydus Lifesciences Ltd",
             "ticker": "ZYDUSLIFE.NS",
             "sector": "Pharma",
-            "buy_price": 550.0,
-            "shares": 1,
+            "buy_price": 0,
+            "shares": 0,
             "purchase_date": "2023-06-20",
             "hx_cat": true,
-            "total_invested": 550.0,
-            "profit_until_now": 0.0,
-            "loss_until_now": 0.0,
+            "total_invested": 0,
+            "profit_until_now": 0,
+            "loss_until_now": 0,
             "listing_price": 0.0,
             "issue_price": 0.0,
             "issue_size": 0,
@@ -350,6 +350,15 @@
             "price_per_share": 300.0,
             "date": "2025-04-17",
             "profit_loss": 437.2
+        },
+        {
+            "company_id": "68106504-90c7-441b-954f-d56fe5f84899",
+            "type": "sell",
+            "amount": 100.15,
+            "shares": 1,
+            "price_per_share": 100.15,
+            "date": "2025-04-17",
+            "profit_loss": -449.85
         }
     ]
 }
