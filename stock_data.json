@@ -78,6 +78,24 @@
             "issue_size": 0,
             "listed_date": "",
             "grow_link": ""
+        },
+        {
+            "id": "459586a9-28a4-4408-a3c7-eb5eb55a8f1b",
+            "name": "Jupiter Wagons Ltd",
+            "ticker": "JWL.NS",
+            "sector": "Railway",
+            "buy_price": 0.0,
+            "shares": 0,
+            "purchase_date": "2025-04-17",
+            "hx_cat": true,
+            "total_invested": 0.0,
+            "profit_until_now": 0.0,
+            "loss_until_now": 0.0,
+            "listing_price": 0.0,
+            "issue_price": 0.0,
+            "issue_size": 0,
+            "listed_date": "",
+            "grow_link": ""
         }
     ],
     "transactions": [
