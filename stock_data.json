@@ -59,6 +59,24 @@
       "issue_size": 0,
       "listed_date": "",
       "grow_link": ""
+    },
+    {
+      "id": "d536104b-9351-46d2-ae6b-86bde8bbf156",
+      "name": "Orient Technologies Ltd",
+      "ticker": "ORIENTTECH.NS",
+      "sector": "IT & Tech",
+      "buy_price": 322.59,
+      "shares": 2,
+      "purchase_date": "2025-02-28",
+      "hx_cat": true,
+      "total_invested": 645.18,
+      "profit_until_now": 0.0,
+      "loss_until_now": 0.0,
+      "listing_price": 0.0,
+      "issue_price": 0.0,
+      "issue_size": 0,
+      "listed_date": "",
+      "grow_link": ""
     }
   ],
   "transactions": [
@@ -78,6 +96,15 @@
       "shares": 5,
       "price_per_share": 269.25,
       "date": "2025-03-03",
+      "profit_loss": 0.0
+    },
+    {
+      "company_id": "d536104b-9351-46d2-ae6b-86bde8bbf156",
+      "type": "buy",
+      "amount": 645.18,
+      "shares": 2,
+      "price_per_share": 322.59,
+      "date": "2025-02-28",
       "profit_loss": 0.0
     }
   ]
