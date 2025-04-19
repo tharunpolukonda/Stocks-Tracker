@@ -2,6 +2,25 @@
   "sectors": [
     "Solar Power"
   ],
-  "companies": [],
+  "companies": [
+    {
+      "id": "3a2d8ecb-7d07-4af2-b04c-476bb0a60b8c",
+      "name": "Waaree Renewables Technologies Ltd",
+      "ticker": "WAAREERTL.NS",
+      "sector": "Solar Power",
+      "buy_price": 0.0,
+      "shares": 0,
+      "purchase_date": "2025-04-19",
+      "hx_cat": true,
+      "total_invested": 0.0,
+      "profit_until_now": 0.0,
+      "loss_until_now": 0.0,
+      "listing_price": 0.0,
+      "issue_price": 0.0,
+      "issue_size": 0,
+      "listed_date": "",
+      "grow_link": ""
+    }
+  ],
   "transactions": []
 }
