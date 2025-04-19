@@ -21,7 +21,35 @@
       "issue_size": 0,
       "listed_date": "",
       "grow_link": ""
+    },
+    {
+      "id": "47679d2f-3e2f-4506-aa50-139380fbd906",
+      "name": "Triveni Turbine Ltd",
+      "ticker": "TRITURBINE.NS",
+      "sector": "Aircraft, Engines & [All]",
+      "buy_price": 489.39,
+      "shares": 3,
+      "purchase_date": "2025-03-04",
+      "hx_cat": true,
+      "total_invested": 1468.17,
+      "profit_until_now": 0.0,
+      "loss_until_now": 0.0,
+      "listing_price": 0.0,
+      "issue_price": 0.0,
+      "issue_size": 0,
+      "listed_date": "",
+      "grow_link": ""
     }
   ],
-  "transactions": []
+  "transactions": [
+    {
+      "company_id": "47679d2f-3e2f-4506-aa50-139380fbd906",
+      "type": "buy",
+      "amount": 1468.17,
+      "shares": 3,
+      "price_per_share": 489.39,
+      "date": "2025-03-04",
+      "profit_loss": 0.0
+    }
+  ]
 }
