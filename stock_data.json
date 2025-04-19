@@ -78,6 +78,24 @@
       "issue_size": 0,
       "listed_date": "",
       "grow_link": ""
+    },
+    {
+      "id": "e307cdd7-bee8-4b5c-94ed-50c78963f7ad",
+      "name": "Anant Raj Ltd",
+      "ticker": "ANANTRAJ.NS",
+      "sector": "Construction Building & Real-Estate",
+      "buy_price": 442.09,
+      "shares": 3,
+      "purchase_date": "2025-04-11",
+      "hx_cat": true,
+      "total_invested": 1326.27,
+      "profit_until_now": 0.0,
+      "loss_until_now": 0.0,
+      "listing_price": 0.0,
+      "issue_price": 0.0,
+      "issue_size": 0,
+      "listed_date": "",
+      "grow_link": ""
     }
   ],
   "transactions": [
@@ -106,6 +124,15 @@
       "shares": 2,
       "price_per_share": 322.59,
       "date": "2025-02-28",
+      "profit_loss": 0.0
+    },
+    {
+      "company_id": "e307cdd7-bee8-4b5c-94ed-50c78963f7ad",
+      "type": "buy",
+      "amount": 1326.27,
+      "shares": 3,
+      "price_per_share": 442.09,
+      "date": "2025-04-11",
       "profit_loss": 0.0
     }
   ]
