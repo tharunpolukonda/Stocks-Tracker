@@ -40,6 +40,24 @@
       "issue_size": 0,
       "listed_date": "",
       "grow_link": ""
+    },
+    {
+      "id": "bed1e9b4-1480-43fe-abaf-bc65eb2abf8f",
+      "name": "Indo Count Industries Ltd",
+      "ticker": "ICIL.NS",
+      "sector": "Textile & Clothing",
+      "buy_price": 269.25,
+      "shares": 5,
+      "purchase_date": "2025-03-03",
+      "hx_cat": true,
+      "total_invested": 1346.25,
+      "profit_until_now": 0.0,
+      "loss_until_now": 0.0,
+      "listing_price": 0.0,
+      "issue_price": 0.0,
+      "issue_size": 0,
+      "listed_date": "",
+      "grow_link": ""
     }
   ],
   "transactions": [
@@ -50,6 +68,15 @@
       "shares": 3,
       "price_per_share": 489.39,
       "date": "2025-03-04",
+      "profit_loss": 0.0
+    },
+    {
+      "company_id": "bed1e9b4-1480-43fe-abaf-bc65eb2abf8f",
+      "type": "buy",
+      "amount": 1346.25,
+      "shares": 5,
+      "price_per_share": 269.25,
+      "date": "2025-03-03",
       "profit_loss": 0.0
     }
   ]
