@@ -123,7 +123,7 @@ def toggle_add_ipo():
     st.session_state.show_visualize_companies = False
     st.session_state.show_journal_ledger = False
     st.session_state.show_track_ipo = False
-    st.session_state.filter_cap_wise = false
+    st.session_state.filter_cap_wise = False
     st.session_state.filter_combined_caps = False
     st.session_state.edit_company = None
 
@@ -257,7 +257,17 @@ def go_to_home():
     st.session_state.edit_company = None
     st.rerun()
 
-# App subtitle
+# Header with images and title in a single line
+col1, col2, col3, col4 = st.columns([1, 1, 1, 1])
+with col1:
+    st.image("assets/bull.png", width=100)
+with col2:
+    st.image("assets/hoox_logo.png", width=200)
+with col3:
+    st.markdown("<h1 style='text-align: center; color: #3b82f6; margin: 0; line-height: 100px;'>Price-Tracker</h1>", unsafe_allow_html=True)
+with col4:
+    st.image("assets/bear.png", width=100)
+
 
 
 # Action buttons

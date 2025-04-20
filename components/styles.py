@@ -1,7 +1,7 @@
 import streamlit as st
 
 def apply_styles():
-    """Apply 3D-patterned CSS styles with Dark Blue, Black, and minimal White shadow, with bold Times New Roman centered table text, centered subheaders, and inline header with images."""
+    """Apply 3D-patterned CSS styles with Dark Blue, Black, and minimal White shadow, with bold Times New Roman centered table text, centered subheaders, and inline header layout."""
     st.markdown("""
         <style>
         /* General App Styling */
@@ -29,8 +29,20 @@ def apply_styles():
             display: none;
         }
 
-        /* Title Styling */
-        h1 {
+        /* Header Styling */
+        .header-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            padding: 10px 0;
+        }
+        .header-row .stImage {
+            display: inline-block;
+            vertical-align: middle;
+            margin: 0 10px;
+        }
+        .header-row h1 {
             color: #3b82f6;
             text-shadow: 0 0 8px rgba(255, 255, 255, 0.2), 0 4px 8px rgba(0, 0, 0, 0.5);
             font-size: 2.8em;
@@ -39,21 +51,10 @@ def apply_styles():
             transition: transform 0.3s ease;
             flex: 1;
             text-align: center;
+            line-height: 100px; /* Match image height */
         }
-        h1:hover {
+        .header-row h1:hover {
             transform: translateZ(35px);
-        }
-
-        /* Header Styling */
-        h2, h3 {
-            color: #1e3a8a;
-            text-shadow: 0 0 5px rgba(255, 255, 255, 0.15), 0 2px 4px rgba(0, 0, 0, 0.4);
-            transform: translateZ(15px);
-            transition: transform 0.3s ease;
-            text-align: center; /* Center subheaders */
-        }
-        h2:hover, h3:hover {
-            transform: translateZ(20px);
         }
 
         /* Button Styling */
@@ -107,76 +108,6 @@ def apply_styles():
         .stButton>button[kind="primary"]:hover {
             background: linear-gradient(45deg, #3b82f6 0%, #1e3a8a 100%);
             box-shadow: 0 10px 30px rgba(59, 130, 246, 0.7);
-        }
-
-        /* Header Container for Images and Title */
-        .header-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            padding: 20px 0;
-            background: rgba(10, 10, 10, 0.9);
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
-            margin-bottom: 20px;
-        }
-
-        /* Image and Title Layout */
-        .header-left {
-            display: flex;
-            align-items: center;
-            margin-right: auto;
-        }
-        .header-right {
-            display: flex;
-            align-items: center;
-            margin-left: auto;
-        }
-
-        /* Image Styling */
-        .header-container img[src$="bull.png"] {
-            width: 100px;
-            height: 100px;
-            object-fit: contain;
-            margin-right: 20px;
-        }
-        .header-container img[src$="hoox_logo.png"] {
-            width: 200px;
-            height: 88px;
-            object-fit: contain;
-            margin-right: 20px;
-        }
-        .header-container img[src$="bear.png"] {
-            width: 100px;
-            height: 100px;
-            object-fit: contain;
-            margin-left: 20px;
-        }
-
-        /* Ensure no borders or shadows on images once loaded */
-        .header-container img {
-            border: none;
-            box-shadow: none;
-        }
-
-        /* Debug: Show red border and alt text if image fails to load */
-        .header-container img {
-            border: 1px solid red;
-        }
-        .header-container img::after {
-            content: attr(alt);
-            position: absolute;
-            color: red;
-            font-size: 12px;
-            margin-left: 5px;
-        }
-
-        /* Hide st.image outputs to avoid overlap */
-        img[src$="bull.png"]:not(.header-container img),
-        img[src$="hoox_logo.png"]:not(.header-container img),
-        img[src$="bear.png"]:not(.header-container img) {
-            display: none !important;
         }
 
         /* Table Styling (General) */
@@ -442,20 +373,6 @@ def apply_styles():
             margin: 20px 0;
         }
         </style>
-    """, unsafe_allow_html=True)
-
-    # HTML for the header container with images and title
-    st.markdown("""
-        <div class="header-container">
-            <div class="header-left">
-                <img src="assets/bull.png" alt="Bull">
-                <img src="assets/hoox_logo.png" alt="HOOX Logo">
-            </div>
-            <h1>HOOX Companywise Tracker & Analysis</h1>
-            <div class="header-right">
-                <img src="assets/bear.png" alt="Bear">
-            </div>
-        </div>
     """, unsafe_allow_html=True)
 
     # JavaScript to dynamically set data-text attribute for buttons
