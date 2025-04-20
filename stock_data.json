@@ -115,6 +115,24 @@
       "listed_date": "2025-01-29",
       "grow_link": "https://groww.in/ipo/denta-water-and-infra-solutions-ipo",
       "subscription_rate": 200
+    },
+    {
+      "id": "50b0fea7-37a7-4ccf-a422-6c67b3c4e08e",
+      "name": "Larsen & Toubro Ltd",
+      "ticker": "LT.NS",
+      "sector": "Construction Building & Real-Estate",
+      "buy_price": 2000.0,
+      "shares": 10,
+      "purchase_date": "2025-01-08",
+      "hx_cat": true,
+      "total_invested": 20000.0,
+      "profit_until_now": 0.0,
+      "loss_until_now": 0.0,
+      "listing_price": 0.0,
+      "issue_price": 0.0,
+      "issue_size": 0,
+      "listed_date": "",
+      "grow_link": ""
     }
   ],
   "transactions": [
@@ -152,6 +170,15 @@
       "shares": 3,
       "price_per_share": 442.09,
       "date": "2025-04-11",
+      "profit_loss": 0.0
+    },
+    {
+      "company_id": "50b0fea7-37a7-4ccf-a422-6c67b3c4e08e",
+      "type": "buy",
+      "amount": 20000.0,
+      "shares": 10,
+      "price_per_share": 2000.0,
+      "date": "2025-01-08",
       "profit_loss": 0.0
     }
   ]
