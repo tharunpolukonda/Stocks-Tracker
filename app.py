@@ -265,15 +265,13 @@ with col2:
     st.image("assets/hoox_logo.png", width=150)
 with col3:
     st.markdown("<h1 style='text-align: center; color: #043bb3; margin: 0; line-height: 100px;'>Stocks-Price-Tracker-Analysis</h1>", unsafe_allow_html=True)
-
 with col4:
     st.image("assets/bear.png", width=200)
 
-
-
 # Action buttons
 st.markdown("### Actions")
-col1, col2, col3, col4, col5, col6, col7, col8, col9, col10, col11 = st.columns(11)
+# First row with 6 buttons
+col1, col2, col3, col4, col5, col6 = st.columns(6)
 with col1:
     if st.button("Home", key="home_button"):
         go_to_home()
@@ -294,6 +292,9 @@ with col6:
     if st.button("High Return", key="high_return_button",
                  type="primary" if st.session_state.show_high_return else "secondary"):
         toggle_high_return()
+
+# Second row with 5 buttons
+col7, col8, col9, col10, col11 = st.columns(5)
 with col7:
     if st.button("Track-HX-CAT", key="hx_cat_button",
                  type="primary" if st.session_state.show_hx_cat else "secondary"):
@@ -339,6 +340,8 @@ elif st.session_state.show_journal_ledger:
 elif st.session_state.show_track_ipo:
     track_ipo()
 elif st.session_state.edit_company:
-    edit_company_form()
+    company = next((c for c in st.session_state.data["companies"] if c["id"] == st.session_state.edit_company), None)
+    is_ipo = company.get("is_ipo", bool(company.get("listing_price", 0) > 0))
+    edit_company_form(company, is_ipo=is_ipo)  # Pass is_ipo flag to handle 8 or 14 fields
 else:
     portfolio_dashboard()
