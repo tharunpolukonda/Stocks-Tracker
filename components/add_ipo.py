@@ -41,6 +41,8 @@ def add_ipo_form():
                                         value=datetime.date.today(),
                                         max_value=datetime.date.today())
             grow_link = st.text_input("GrowLink", placeholder="e.g. https://groww.in/ipo/ola-electric")
+            subscription_rate = st.number_input("Subscription Rate", min_value=0, value=0, step=1,
+                                               placeholder="Enter subscription rate (times subscribed)")
 
             submit_ipo = st.form_submit_button("Add IPO")
 
@@ -69,7 +71,8 @@ def add_ipo_form():
                             "issue_price": float(issue_price),
                             "issue_size": int(issue_size),
                             "listed_date": listed_date.strftime("%Y-%m-%d"),
-                            "grow_link": grow_link
+                            "grow_link": grow_link,
+                            "subscription_rate": int(subscription_rate)
                         }
                         st.session_state.data["companies"].append(new_company)
                         # Log transaction if shares > 0

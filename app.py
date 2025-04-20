@@ -10,6 +10,7 @@ from components.visualize_companies import visualize_companies
 from components.journal_ledger import journal_ledger
 from components.edit_company import edit_company_form
 from components.portfolio_dashboard import portfolio_dashboard
+from components.track_ipo import track_ipo
 from components.utils import load_data
 from components.styles import apply_styles
 
@@ -18,18 +19,6 @@ st.set_page_config(page_title="Sector-based Stock Tracker", layout="wide")
 
 # Apply custom styles
 apply_styles()
-
-# Display images and title in a single row
-col1, col2, col3, col4 = st.columns([1, 1, 4, 1])
-with col1:
-    st.image("assets/bull.png", width=50)
-with col2:
-    st.image("assets/hoox_logo.png", width=100)
-with col3:
-    st.markdown("<h1 style='text-align: left; margin-top: 0;'>Companywise Tracker & Analysis</h1>", unsafe_allow_html=True)
-with col4:
-    st.image("assets/bear.png", width=50)
-
 
 # Initialize session state
 if 'data' not in st.session_state:
@@ -83,6 +72,9 @@ if 'filter_combined_caps' not in st.session_state:
 if 'show_journal_ledger' not in st.session_state:
     st.session_state.show_journal_ledger = False
 
+if 'show_track_ipo' not in st.session_state:
+    st.session_state.show_track_ipo = False
+
 if 'edit_company' not in st.session_state:
     st.session_state.edit_company = None
 
@@ -100,6 +92,7 @@ def toggle_add_sector():
     st.session_state.show_invest_companies = False
     st.session_state.show_visualize_companies = False
     st.session_state.show_journal_ledger = False
+    st.session_state.show_track_ipo = False
     st.session_state.filter_cap_wise = False
     st.session_state.filter_combined_caps = False
     st.session_state.edit_company = None
@@ -114,6 +107,7 @@ def toggle_add_company():
     st.session_state.show_invest_companies = False
     st.session_state.show_visualize_companies = False
     st.session_state.show_journal_ledger = False
+    st.session_state.show_track_ipo = False
     st.session_state.filter_cap_wise = False
     st.session_state.filter_combined_caps = False
     st.session_state.edit_company = None
@@ -128,7 +122,8 @@ def toggle_add_ipo():
     st.session_state.show_invest_companies = False
     st.session_state.show_visualize_companies = False
     st.session_state.show_journal_ledger = False
-    st.session_state.filter_cap_wise = False
+    st.session_state.show_track_ipo = False
+    st.session_state.filter_cap_wise = false
     st.session_state.filter_combined_caps = False
     st.session_state.edit_company = None
 
@@ -142,6 +137,7 @@ def toggle_view_mode():
     st.session_state.show_invest_companies = False
     st.session_state.show_visualize_companies = False
     st.session_state.show_journal_ledger = False
+    st.session_state.show_track_ipo = False
     st.session_state.filter_cap_wise = False
     st.session_state.filter_combined_caps = False
     st.session_state.edit_company = None
@@ -158,6 +154,7 @@ def toggle_high_return():
     st.session_state.show_invest_companies = False
     st.session_state.show_visualize_companies = False
     st.session_state.show_journal_ledger = False
+    st.session_state.show_track_ipo = False
     st.session_state.filter_cap_wise = False
     st.session_state.filter_combined_caps = False
     st.session_state.edit_company = None
@@ -174,6 +171,7 @@ def toggle_hx_cat():
     st.session_state.show_invest_companies = False
     st.session_state.show_visualize_companies = False
     st.session_state.show_journal_ledger = False
+    st.session_state.show_track_ipo = False
     st.session_state.filter_cap_wise = False
     st.session_state.filter_combined_caps = False
     st.session_state.edit_company = None
@@ -188,6 +186,7 @@ def toggle_invest_companies():
     st.session_state.show_hx_cat = False
     st.session_state.show_visualize_companies = False
     st.session_state.show_journal_ledger = False
+    st.session_state.show_track_ipo = False
     st.session_state.filter_cap_wise = False
     st.session_state.filter_combined_caps = False
     st.session_state.edit_company = None
@@ -204,6 +203,7 @@ def toggle_visualize_companies():
     st.session_state.show_hx_cat = False
     st.session_state.show_invest_companies = False
     st.session_state.show_journal_ledger = False
+    st.session_state.show_track_ipo = False
     st.session_state.filter_cap_wise = False
     st.session_state.filter_combined_caps = False
     st.session_state.edit_company = None
@@ -220,6 +220,22 @@ def toggle_journal_ledger():
     st.session_state.show_hx_cat = False
     st.session_state.show_invest_companies = False
     st.session_state.show_visualize_companies = False
+    st.session_state.show_track_ipo = False
+    st.session_state.filter_cap_wise = False
+    st.session_state.filter_combined_caps = False
+    st.session_state.edit_company = None
+
+def toggle_track_ipo():
+    st.session_state.show_track_ipo = not st.session_state.show_track_ipo
+    st.session_state.add_sector_clicked = False
+    st.session_state.add_company_clicked = False
+    st.session_state.add_ipo_clicked = False
+    st.session_state.view_mode = False
+    st.session_state.show_high_return = False
+    st.session_state.show_hx_cat = False
+    st.session_state.show_invest_companies = False
+    st.session_state.show_visualize_companies = False
+    st.session_state.show_journal_ledger = False
     st.session_state.filter_cap_wise = False
     st.session_state.filter_combined_caps = False
     st.session_state.edit_company = None
@@ -234,15 +250,19 @@ def go_to_home():
     st.session_state.show_invest_companies = False
     st.session_state.show_visualize_companies = False
     st.session_state.show_journal_ledger = False
+    st.session_state.show_track_ipo = False
     st.session_state.filter_cap_wise = False
     st.session_state.filter_combined_caps = False
     st.session_state.selected_sector_for_view = None
     st.session_state.edit_company = None
     st.rerun()
 
+# App subtitle
+
+
 # Action buttons
 st.markdown("### Actions")
-col1, col2, col3, col4, col5, col6, col7, col8, col9, col10 = st.columns(10)
+col1, col2, col3, col4, col5, col6, col7, col8, col9, col10, col11 = st.columns(11)
 with col1:
     if st.button("Home", key="home_button"):
         go_to_home()
@@ -279,39 +299,35 @@ with col10:
     if st.button("Journal & Ledger", key="journal_ledger_button",
                  type="primary" if st.session_state.show_journal_ledger else "secondary"):
         toggle_journal_ledger()
+with col11:
+    if st.button("Track IPOs", key="track_ipo_button",
+                 type="primary" if st.session_state.show_track_ipo else "secondary"):
+        toggle_track_ipo()
 
 st.markdown("---")
 
 # Render components based on session state
 if st.session_state.add_sector_clicked:
     add_sector_form()
-
 elif st.session_state.add_company_clicked:
     add_company_form()
-
 elif st.session_state.add_ipo_clicked:
     add_ipo_form()
-
 elif st.session_state.view_mode:
     view_mode()
-
 elif st.session_state.show_high_return:
     high_return()
-
 elif st.session_state.show_hx_cat:
     hx_cat()
-
 elif st.session_state.show_invest_companies:
     invest_companies()
-
 elif st.session_state.show_visualize_companies:
     visualize_companies()
-
 elif st.session_state.show_journal_ledger:
     journal_ledger()
-
+elif st.session_state.show_track_ipo:
+    track_ipo()
 elif st.session_state.edit_company:
     edit_company_form()
-
 else:
     portfolio_dashboard()

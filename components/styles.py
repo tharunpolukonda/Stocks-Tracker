@@ -1,7 +1,7 @@
 import streamlit as st
 
 def apply_styles():
-    """Apply 3D-patterned CSS styles with Dark Blue, Black, and minimal White shadow, with bold Times New Roman centered table text and centered subheaders."""
+    """Apply 3D-patterned CSS styles with Dark Blue, Black, and minimal White shadow, with bold Times New Roman centered table text, centered subheaders, and inline header with images."""
     st.markdown("""
         <style>
         /* General App Styling */
@@ -24,16 +24,21 @@ def apply_styles():
             transform: translateZ(15px);
         }
 
+        /* Hide default Streamlit title to avoid duplication */
+        div[data-testid="stAppViewContainer"] > div > div > h1:first-child {
+            display: none;
+        }
+
         /* Title Styling */
         h1 {
             color: #3b82f6;
             text-shadow: 0 0 8px rgba(255, 255, 255, 0.2), 0 4px 8px rgba(0, 0, 0, 0.5);
             font-size: 2.8em;
-            text-align: center;
-            margin-bottom: 30px;
+            margin: 0;
             transform: translateZ(25px);
             transition: transform 0.3s ease;
-            margin-top: 20px; /* Reduced to account for removed header */
+            flex: 1;
+            text-align: center;
         }
         h1:hover {
             transform: translateZ(35px);
@@ -104,7 +109,77 @@ def apply_styles():
             box-shadow: 0 10px 30px rgba(59, 130, 246, 0.7);
         }
 
-        /* Table Styling */
+        /* Header Container for Images and Title */
+        .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 20px 0;
+            background: rgba(10, 10, 10, 0.9);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            margin-bottom: 20px;
+        }
+
+        /* Image and Title Layout */
+        .header-left {
+            display: flex;
+            align-items: center;
+            margin-right: auto;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            margin-left: auto;
+        }
+
+        /* Image Styling */
+        .header-container img[src$="bull.png"] {
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+            margin-right: 20px;
+        }
+        .header-container img[src$="hoox_logo.png"] {
+            width: 200px;
+            height: 88px;
+            object-fit: contain;
+            margin-right: 20px;
+        }
+        .header-container img[src$="bear.png"] {
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+            margin-left: 20px;
+        }
+
+        /* Ensure no borders or shadows on images once loaded */
+        .header-container img {
+            border: none;
+            box-shadow: none;
+        }
+
+        /* Debug: Show red border and alt text if image fails to load */
+        .header-container img {
+            border: 1px solid red;
+        }
+        .header-container img::after {
+            content: attr(alt);
+            position: absolute;
+            color: red;
+            font-size: 12px;
+            margin-left: 5px;
+        }
+
+        /* Hide st.image outputs to avoid overlap */
+        img[src$="bull.png"]:not(.header-container img),
+        img[src$="hoox_logo.png"]:not(.header-container img),
+        img[src$="bear.png"]:not(.header-container img) {
+            display: none !important;
+        }
+
+        /* Table Styling (General) */
         .table-container {
             background: rgba(26, 26, 26, 0.9);
             border-radius: 12px;
@@ -140,6 +215,42 @@ def apply_styles():
             font-size: 16px;
             font-weight: bold;
             text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Track IPO Table Styling */
+        .track-ipo-table table {
+            width: 100%;
+            background: rgba(26, 26, 26, 0.9);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(30, 58, 138, 0.3);
+            transform: translateZ(10px);
+        }
+        .track-ipo-table th {
+            background: linear-gradient(145deg, #1e3a8a, #3b82f6);
+            color: #ffffff;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+            font-family: 'Times New Roman', serif;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            vertical-align: middle;
+            padding: 10px;
+        }
+        .track-ipo-table td {
+            border-bottom: 1px solid rgba(30, 58, 138, 0.2);
+            font-family: 'Times New Roman', serif;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            vertical-align: middle;
+            padding: 10px;
+            color: #ffffff;
+        }
+        .track-ipo-table tr:hover {
+            background: rgba(30, 58, 138, 0.2);
         }
 
         /* Company Details Container */
@@ -332,7 +443,21 @@ def apply_styles():
         }
         </style>
     """, unsafe_allow_html=True)
-    
+
+    # HTML for the header container with images and title
+    st.markdown("""
+        <div class="header-container">
+            <div class="header-left">
+                <img src="assets/bull.png" alt="Bull">
+                <img src="assets/hoox_logo.png" alt="HOOX Logo">
+            </div>
+            <h1>HOOX Companywise Tracker & Analysis</h1>
+            <div class="header-right">
+                <img src="assets/bear.png" alt="Bear">
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
+
     # JavaScript to dynamically set data-text attribute for buttons
     st.markdown("""
         <script>

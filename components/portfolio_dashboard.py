@@ -8,6 +8,40 @@ def portfolio_dashboard():
     if not st.session_state.data["companies"]:
         st.info("No companies added yet. Click 'Add Company' or 'Add IPOs' to start tracking stocks.")
     else:
+        # Portfolio Summary
+        total_invested = 0
+        total_current_value = 0
+        
+        for company in st.session_state.data["companies"]:
+            total_invested_company = company.get("total_invested", company.get("buy_price", 0) * company.get("shares", 0))
+            shares = company.get("shares", 0)
+            current_price = get_current_stock_price(company["ticker"])
+            
+            if total_invested_company > 0 and shares > 0 and current_price:
+                total_invested += total_invested_company
+                current_val = current_price * shares
+                total_current_value += current_val
+        
+        total_profit_loss = total_current_value - total_invested
+        total_profit_loss_percent = (total_profit_loss / total_invested * 100) if total_invested > 0 else 0
+        
+        st.subheader("Portfolio Summary")
+        col1, col2, col3, col4 = st.columns(4)
+        
+        with col1:
+            st.metric("Total Invested", f"₹{total_invested:.2f}")
+        with col2:
+            st.metric("Current Value", f"₹{total_current_value:.2f}")
+        with col3:
+            pl_label = "Profit" if total_profit_loss >= 0 else "Loss"
+            st.metric(pl_label, f"₹{abs(total_profit_loss):.2f}", 
+                     f"{total_profit_loss_percent:.2f}%", 
+                     delta_color="normal" if total_profit_loss >= 0 else "inverse")
+        with col4:
+            st.metric("Holdings", f"{len(st.session_state.data['companies'])} Stocks")
+        
+        st.markdown("---")
+
         # Debug buttons
         col1, col2 = st.columns(2)
         with col1:
