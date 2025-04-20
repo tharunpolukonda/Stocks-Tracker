@@ -96,6 +96,25 @@
       "issue_size": 0,
       "listed_date": "",
       "grow_link": ""
+    },
+    {
+      "id": "6ed7b8cd-bade-4fdb-af5f-e4e3c1718dfb",
+      "name": "Denta Water and Infra Solutions IPO",
+      "ticker": "DENTA.NS",
+      "sector": "Construction Building & Real-Estate",
+      "buy_price": 0.0,
+      "shares": 0,
+      "purchase_date": "2025-04-20",
+      "hx_cat": true,
+      "total_invested": 0.0,
+      "profit_until_now": 0.0,
+      "loss_until_now": 0.0,
+      "listing_price": 325.0,
+      "issue_price": 293.98,
+      "issue_size": 219,
+      "listed_date": "2025-01-29",
+      "grow_link": "https://groww.in/ipo/denta-water-and-infra-solutions-ipo",
+      "subscription_rate": 200
     }
   ],
   "transactions": [
