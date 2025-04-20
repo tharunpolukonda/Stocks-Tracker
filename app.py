@@ -258,15 +258,16 @@ def go_to_home():
     st.rerun()
 
 # Header with images and title in a single line
-col1, col2, col3, col4 = st.columns([1, 1, 1, 1])
+col1, col2, col3, col4 = st.columns([1, 1, 4, 1])
 with col1:
-    st.image("assets/bull.png", width=100)
+    st.image("assets/bull.png", width=200)
 with col2:
-    st.image("assets/hoox_logo.png", width=200)
+    st.image("assets/hoox_logo.png", width=150)
 with col3:
-    st.markdown("<h1 style='text-align: center; color: #3b82f6; margin: 0; line-height: 100px;'>Price-Tracker</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align: center; color: #043bb3; margin: 0; line-height: 100px;'>Stocks-Price-Tracker-Analysis</h1>", unsafe_allow_html=True)
+
 with col4:
-    st.image("assets/bear.png", width=100)
+    st.image("assets/bear.png", width=200)
 
 
 
