@@ -115,6 +115,24 @@
       "listed_date": "2025-01-29",
       "grow_link": "https://groww.in/ipo/denta-water-and-infra-solutions-ipo",
       "subscription_rate": 200
+    },
+    {
+      "id": "5dd67ee8-2254-4a59-bafa-f37c55cb81e7",
+      "name": "Interarch Building Products Ltd",
+      "ticker": "INTERARCH.NS",
+      "sector": "Construction Building & Real-Estate",
+      "buy_price": 0.0,
+      "shares": 0,
+      "purchase_date": "2025-04-21",
+      "hx_cat": true,
+      "total_invested": 0.0,
+      "profit_until_now": 0.0,
+      "loss_until_now": 0.0,
+      "listing_price": 0.0,
+      "issue_price": 0.0,
+      "issue_size": 0,
+      "listed_date": "",
+      "grow_link": ""
     }
   ],
   "transactions": [
