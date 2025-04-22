@@ -134,6 +134,24 @@
       "issue_size": 0,
       "listed_date": "",
       "grow_link": ""
+    },
+    {
+      "id": "1767ba21-3bd6-4175-88f6-6567cb8e8398",
+      "name": "VASA DENTICITY LIMITED",
+      "ticker": "DENTALKART-SM.NS",
+      "sector": "Health",
+      "buy_price": 0.0,
+      "shares": 0,
+      "purchase_date": "2025-04-22",
+      "hx_cat": false,
+      "total_invested": 0.0,
+      "profit_until_now": 0.0,
+      "loss_until_now": 0.0,
+      "listing_price": 0.0,
+      "issue_price": 0.0,
+      "issue_size": 0,
+      "listed_date": "",
+      "grow_link": ""
     }
   ],
   "transactions": [
