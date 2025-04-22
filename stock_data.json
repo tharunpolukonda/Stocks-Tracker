@@ -152,6 +152,24 @@
       "issue_size": 0,
       "listed_date": "",
       "grow_link": ""
+    },
+    {
+      "id": "61286340-4b30-4a26-ab68-a76ce0363f4f",
+      "name": "Entero Healthcare Solutions Ltd",
+      "ticker": "ENTERO.NS",
+      "sector": "Health",
+      "buy_price": 0.0,
+      "shares": 0,
+      "purchase_date": "2025-04-22",
+      "hx_cat": false,
+      "total_invested": 0.0,
+      "profit_until_now": 0.0,
+      "loss_until_now": 0.0,
+      "listing_price": 0.0,
+      "issue_price": 0.0,
+      "issue_size": 0,
+      "listed_date": "",
+      "grow_link": ""
     }
   ],
   "transactions": [
