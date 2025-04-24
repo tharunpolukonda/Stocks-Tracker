@@ -446,6 +446,24 @@
       "issue_size": 0,
       "listed_date": "",
       "grow_link": ""
+    },
+    {
+      "id": "c7fb000d-1de5-41b4-a4b8-5f3eae4ad718",
+      "name": "Samhi Hotels Ltd",
+      "ticker": "SAMHI.NS",
+      "sector": "Finance & Hotels",
+      "buy_price": 0.0,
+      "shares": 0,
+      "purchase_date": "2025-04-24",
+      "hx_cat": false,
+      "total_invested": 0.0,
+      "profit_until_now": 0.0,
+      "loss_until_now": 0.0,
+      "listing_price": 0.0,
+      "issue_price": 0.0,
+      "issue_size": 0,
+      "listed_date": "",
+      "grow_link": ""
     }
   ],
   "transactions": [
