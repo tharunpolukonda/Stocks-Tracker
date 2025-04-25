@@ -75,15 +75,72 @@ def portfolio_dashboard():
                 "Shares": shares,
                 "HX-CAT": company.get("hx_cat", False),
                 "Formatted P/L": f"{currency_symbol}{pl_data['profit_loss']:.2f}" if pl_data else "N/A",
-                "Formatted Invested": f"{currency_symbol}{total_invested:.2f}"
+                "Formatted Invested": f"{currency_symbol}{total_invested:.2f}",
+                "Is IPO": company.get("is_ipo", False),
+                "Screener Link": company.get("screener_link", ""),
+                "View Weblink": company.get("view_weblink", "")
             }
             if day_return is None:
                 print(f"Day Change N/A for {company['ticker']}: {day_return_msg}")
             component_data.append(company_data)
 
         df_all = pd.DataFrame(component_data)
+        
+        # Component 1: Companies by Sector
+        with st.container():
+            st.markdown('<div class="table-container">', unsafe_allow_html=True)
+            st.subheader("Companies by Sector")
+            if not st.session_state.data["sectors"]:
+                st.info("No sectors available. Please add a sector first.")
+            else:
+                selected_sector = st.selectbox("Select Sector", st.session_state.data["sectors"], key="sector_select")
+                only_ipo = st.checkbox("Only IPO", key="only_ipo_checkbox")
+                
+                df_sector = df_all[df_all["Sector"] == selected_sector]
+                if only_ipo:
+                    df_sector = df_sector[df_sector["Is IPO"] == True]
+                
+                if not df_sector.empty and df_sector["Day Change (%)"].notna().any():
+                    df_sorted = df_sector.sort_values(by="Day Change (%)", ascending=False)
+                    
+                    # Render custom table with HTML for styling IPO names and clickable links
+                    st.markdown('<div class="table-row">', unsafe_allow_html=True)
+                    cols = st.columns([2, 1, 1, 1, 2, 2])
+                    headers = ["Company Name", "Day Change", "P/L", "P/L %", "View Weblink", "Screener Link"]
+                    for col, header in zip(cols, headers):
+                        with col:
+                            st.markdown(f'<div class="table-cell"><b>{header}</b></div>', unsafe_allow_html=True)
+                    st.markdown('</div>', unsafe_allow_html=True)
+                    
+                    for _, row in df_sorted.iterrows():
+                        is_ipo = row["Is IPO"]
+                        company_name = row["Company"]
+                        display_name = f'<span style="color: #00FF00; font-weight: bold;">{company_name}</span>' if is_ipo else company_name
+                        screener_link = row["Screener Link"]
+                        view_weblink = row["View Weblink"]
+                        screener_display = f'<a href="{screener_link}" target="_blank">Click here</a>' if screener_link else "N/A"
+                        weblink_display = f'<a href="{view_weblink}" target="_blank">Click here</a>' if view_weblink else "N/A"
+                        
+                        st.markdown('<div class="table-row">', unsafe_allow_html=True)
+                        cols = st.columns([2, 1, 1, 1, 2, 2])
+                        with cols[0]:
+                            st.markdown(f'<div class="table-cell">{display_name}</div>', unsafe_allow_html=True)
+                        with cols[1]:
+                            st.markdown(f'<div class="table-cell">{row["Day Change Display"]}</div>', unsafe_allow_html=True)
+                        with cols[2]:
+                            st.markdown(f'<div class="table-cell">{row["Formatted P/L"]}</div>', unsafe_allow_html=True)
+                        with cols[3]:
+                            st.markdown(f'<div class="table-cell">{row["P/L %"]:.2f}%</div>', unsafe_allow_html=True)
+                        with cols[4]:
+                            st.markdown(f'<div class="table-cell">{weblink_display}</div>', unsafe_allow_html=True)
+                        with cols[5]:
+                            st.markdown(f'<div class="table-cell">{screener_display}</div>', unsafe_allow_html=True)
+                        st.markdown('</div>', unsafe_allow_html=True)
+                else:
+                    st.info(f"No {'IPO ' if only_ipo else ''}companies found in the {selected_sector} sector with valid data.")
+            st.markdown('</div>', unsafe_allow_html=True)
 
-        # Component 1: Top 5 Companies by High Day Change (Holding)
+        # Component 2: Top 5 Companies by High Day Change (Holding)
         with st.container():
             st.markdown('<div class="table-container">', unsafe_allow_html=True)
             st.subheader("Top 5 Companies by High Day Change (Holding)")
@@ -106,7 +163,7 @@ def portfolio_dashboard():
                 st.info("No companies with valid day change data and holdings.")
             st.markdown('</div>', unsafe_allow_html=True)
 
-        # Component 2: Top 5 Companies by High P/L% (Holding)
+        # Component 3: Top 5 Companies by High P/L% (Holding)
         with st.container():
             st.markdown('<div class="table-container">', unsafe_allow_html=True)
             st.subheader("Top 5 Companies by High P/L% (Holding)")
@@ -129,7 +186,7 @@ def portfolio_dashboard():
                 st.info("No companies with valid P/L data and holdings.")
             st.markdown('</div>', unsafe_allow_html=True)
 
-        # Component 3: Top 5 HX-Category Companies by High Day Change
+        # Component 4: Top 5 HX-Category Companies by High Day Change
         with st.container():
             st.markdown('<div class="table-container">', unsafe_allow_html=True)
             st.subheader("Top 5 HX-Category Companies by High Day Change")
@@ -152,7 +209,7 @@ def portfolio_dashboard():
                 st.info("No HX-Category companies with valid day change data.")
             st.markdown('</div>', unsafe_allow_html=True)
 
-        # Component 4: Top 5 HX-Category Companies by Low Day Change
+        # Component 5: Top 5 HX-Category Companies by Low Day Change
         with st.container():
             st.markdown('<div class="table-container">', unsafe_allow_html=True)
             st.subheader("Top 5 HX-Category Companies by Low Day Change")
@@ -175,7 +232,7 @@ def portfolio_dashboard():
                 st.info("No HX-Category companies with valid day change data.")
             st.markdown('</div>', unsafe_allow_html=True)
 
-        # Component 5: Top 10 Companies by High Day Change (All)
+        # Component 6: Top 10 Companies by High Day Change (All)
         with st.container():
             st.markdown('<div class="table-container">', unsafe_allow_html=True)
             st.subheader("Top 10 Companies by High Day Change (All)")
@@ -197,7 +254,7 @@ def portfolio_dashboard():
                 st.info("No companies with valid day change data.")
             st.markdown('</div>', unsafe_allow_html=True)
 
-        # Component 6: Top 10 Companies by Low Day Change (All)
+        # Component 7: Top 10 Companies by Low Day Change (All)
         with st.container():
             st.markdown('<div class="table-container">', unsafe_allow_html=True)
             st.subheader("Top 10 Companies by Low Day Change (All)")
