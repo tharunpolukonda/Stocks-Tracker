@@ -501,6 +501,27 @@
       "issue_size": 0,
       "listed_date": "",
       "grow_link": ""
+    },
+    {
+      "id": "621d34ca-5035-4aba-9087-900cc4674e39",
+      "name": "KPI Green Energy Ltd",
+      "ticker": "KPIGREEN.NS",
+      "sector": "Solar Power",
+      "buy_price": 0.0,
+      "shares": 0,
+      "purchase_date": "2025-04-25",
+      "hx_cat": false,
+      "total_invested": 0.0,
+      "profit_until_now": 0.0,
+      "loss_until_now": 0.0,
+      "listing_price": 0.0,
+      "issue_price": 0.0,
+      "issue_size": 0,
+      "listed_date": "",
+      "grow_link": "",
+      "screener_link": "https://www.screener.in/company/KPIGREEN/consolidated/",
+      "view_weblink": "https://stocksector-insights.lovable.app/company/wvKIyX2juKEUT0I7PecQ",
+      "is_ipo": false
     }
   ],
   "transactions": [
