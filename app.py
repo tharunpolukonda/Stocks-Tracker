@@ -78,6 +78,9 @@ if 'show_track_ipo' not in st.session_state:
 if 'edit_company' not in st.session_state:
     st.session_state.edit_company = None
 
+if 'edit_mode' not in st.session_state:
+    st.session_state.edit_mode = False
+
 if 'view_company_details' not in st.session_state:
     st.session_state.view_company_details = None
 
@@ -96,6 +99,7 @@ def toggle_add_sector():
     st.session_state.filter_cap_wise = False
     st.session_state.filter_combined_caps = False
     st.session_state.edit_company = None
+    st.session_state.edit_mode = False
 
 def toggle_add_company():
     st.session_state.add_company_clicked = not st.session_state.add_company_clicked
@@ -111,6 +115,7 @@ def toggle_add_company():
     st.session_state.filter_cap_wise = False
     st.session_state.filter_combined_caps = False
     st.session_state.edit_company = None
+    st.session_state.edit_mode = False
 
 def toggle_add_ipo():
     st.session_state.add_ipo_clicked = not st.session_state.add_ipo_clicked
@@ -126,6 +131,7 @@ def toggle_add_ipo():
     st.session_state.filter_cap_wise = False
     st.session_state.filter_combined_caps = False
     st.session_state.edit_company = None
+    st.session_state.edit_mode = False
 
 def toggle_view_mode():
     st.session_state.view_mode = not st.session_state.view_mode
@@ -141,6 +147,7 @@ def toggle_view_mode():
     st.session_state.filter_cap_wise = False
     st.session_state.filter_combined_caps = False
     st.session_state.edit_company = None
+    st.session_state.edit_mode = False
     if st.session_state.view_mode:
         st.session_state.selected_sector_for_view = None
 
@@ -158,6 +165,7 @@ def toggle_high_return():
     st.session_state.filter_cap_wise = False
     st.session_state.filter_combined_caps = False
     st.session_state.edit_company = None
+    st.session_state.edit_mode = False
     if st.session_state.show_high_return:
         st.session_state.high_return_sector = "All Sectors"
 
@@ -175,6 +183,7 @@ def toggle_hx_cat():
     st.session_state.filter_cap_wise = False
     st.session_state.filter_combined_caps = False
     st.session_state.edit_company = None
+    st.session_state.edit_mode = False
 
 def toggle_invest_companies():
     st.session_state.show_invest_companies = not st.session_state.show_invest_companies
@@ -190,6 +199,7 @@ def toggle_invest_companies():
     st.session_state.filter_cap_wise = False
     st.session_state.filter_combined_caps = False
     st.session_state.edit_company = None
+    st.session_state.edit_mode = False
     if st.session_state.show_invest_companies:
         st.session_state.invest_companies_sector = "All Sectors"
 
@@ -207,6 +217,7 @@ def toggle_visualize_companies():
     st.session_state.filter_cap_wise = False
     st.session_state.filter_combined_caps = False
     st.session_state.edit_company = None
+    st.session_state.edit_mode = False
     if st.session_state.show_visualize_companies:
         st.session_state.visualize_sector = "All Sectors"
 
@@ -224,6 +235,7 @@ def toggle_journal_ledger():
     st.session_state.filter_cap_wise = False
     st.session_state.filter_combined_caps = False
     st.session_state.edit_company = None
+    st.session_state.edit_mode = False
 
 def toggle_track_ipo():
     st.session_state.show_track_ipo = not st.session_state.show_track_ipo
@@ -239,6 +251,7 @@ def toggle_track_ipo():
     st.session_state.filter_cap_wise = False
     st.session_state.filter_combined_caps = False
     st.session_state.edit_company = None
+    st.session_state.edit_mode = False
 
 def go_to_home():
     st.session_state.add_sector_clicked = False
@@ -255,6 +268,7 @@ def go_to_home():
     st.session_state.filter_combined_caps = False
     st.session_state.selected_sector_for_view = None
     st.session_state.edit_company = None
+    st.session_state.edit_mode = False
     st.rerun()
 
 # Header with images and title in a single line
@@ -340,8 +354,6 @@ elif st.session_state.show_journal_ledger:
 elif st.session_state.show_track_ipo:
     track_ipo()
 elif st.session_state.edit_company:
-    company = next((c for c in st.session_state.data["companies"] if c["id"] == st.session_state.edit_company), None)
-    is_ipo = company.get("is_ipo", bool(company.get("listing_price", 0) > 0))
-    edit_company_form(company, is_ipo=is_ipo)  # Pass is_ipo flag to handle 8 or 14 fields
+    edit_company_form()
 else:
     portfolio_dashboard()

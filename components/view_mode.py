@@ -4,8 +4,11 @@ from datetime import datetime, timedelta
 from components.utils import get_current_stock_price, get_today_return, calculate_profit_loss, save_data
 
 def toggle_edit_company(company_id):
-    st.session_state.edit_company = company_id if st.session_state.edit_company != company_id else None
-    st.rerun()  # Force rerun to navigate to edit form
+    st.session_state.edit_company = company_id
+    st.session_state.edit_mode = True
+    st.session_state.view_mode = False
+    st.session_state.selected_sector_for_view = None
+    st.rerun()
 
 def view_mode():
     st.header("View Mode - Portfolio by Sector")
@@ -55,6 +58,10 @@ def view_mode():
                     st.markdown(f"**Day Change**: {day_change_display}")
                     st.markdown(f"**P/L**: {pl_display}")
                     st.markdown(f"**P/L %**: {pl_percent_display}")
+                    screener_link = company.get('screener_link', '')
+                    view_weblink = company.get('view_weblink', '')
+                    st.markdown(f"**Screener Link**: [{'Click here'}]({screener_link})" if screener_link else "**Screener Link**: N/A", unsafe_allow_html=True)
+                    st.markdown(f"**View Weblink**: [{'Click here'}]({view_weblink})" if view_weblink else "**View Weblink**: N/A", unsafe_allow_html=True)
 
                 if is_ipo:
                     st.markdown('<div class="ipo-details-container">', unsafe_allow_html=True)
@@ -68,9 +75,10 @@ def view_mode():
                     with col4:
                         st.markdown(f"**Issue Size**: {company.get('issue_size', 0)}")
                         st.markdown(f"**Listed Date**: {company.get('listed_date', 'N/A')}")
-                        st.markdown(f"**Grow Link**: [{company['grow_link']}]({company['grow_link']})" if company.get("grow_link") else "")
+                        st.markdown(f"**Grow Link**: [{'Click here'}]({company['grow_link']})" if company.get("grow_link") else "**Grow Link**: N/A", unsafe_allow_html=True)
                         pl_issue = ((current_price - company.get('issue_price', 0)) / company.get('issue_price', 0) * 100) if current_price and company.get('issue_price', 0) > 0 else 0.0
                         st.markdown(f"**P/L % to Issue Price**: {pl_issue:.2f}%")
+                        st.markdown(f"**Subscription Rate**: {company.get('subscription_rate', 0)}x")
 
                     # Calculate 3MLP and 6MLP
                     listed_date_str = company.get('listed_date', '')
@@ -201,7 +209,7 @@ def view_mode():
                 st.subheader("Companies in Sector")
                 # Header row
                 st.markdown('<div class="table-row">', unsafe_allow_html=True)
-                cols = st.columns([2, 1, 1, 1, 1, 1, 2])  # 7 columns: 6 data fields + 1 for actions
+                cols = st.columns([2, 1, 1, 1, 1, 1, 2])
                 headers = ["Company", "Sector", "Type", "P/L %", "Current Price", "Day Change", "Actions"]
                 for col, header in zip(cols, headers):
                     with col:
