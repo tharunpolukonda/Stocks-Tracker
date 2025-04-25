@@ -510,7 +510,7 @@
       "buy_price": 0.0,
       "shares": 0,
       "purchase_date": "2025-04-25",
-      "hx_cat": false,
+      "hx_cat": true,
       "total_invested": 0.0,
       "profit_until_now": 0.0,
       "loss_until_now": 0.0,
