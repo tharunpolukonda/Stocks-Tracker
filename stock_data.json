@@ -2,6 +2,38 @@
   "sectors": [
     "IT & Tech"
   ],
-  "companies": [],
-  "transactions": []
+  "companies": [
+    {
+      "id": "6c07c0a7-9973-4ec0-b561-072288d97622",
+      "name": "Zaggle Prepaid Ocean Services Ltd",
+      "ticker": "ZAGGLE.NS",
+      "sector": "IT & Tech",
+      "buy_price": 330.7,
+      "shares": 7,
+      "purchase_date": "2025-02-19",
+      "hx_cat": true,
+      "total_invested": 2314.9,
+      "profit_until_now": 0.0,
+      "loss_until_now": 0.0,
+      "listing_price": 0.0,
+      "issue_price": 0.0,
+      "issue_size": 0,
+      "listed_date": "",
+      "grow_link": "",
+      "screener_link": "https://www.screener.in/company/ZAGGLE/",
+      "view_weblink": "https://stocksector-insights.lovable.app/company/zRHuTgr6PK4kV2BYEWWd",
+      "is_ipo": false
+    }
+  ],
+  "transactions": [
+    {
+      "company_id": "6c07c0a7-9973-4ec0-b561-072288d97622",
+      "type": "buy",
+      "amount": 2314.9,
+      "shares": 7,
+      "price_per_share": 330.7,
+      "date": "2025-02-19",
+      "profit_loss": 0.0
+    }
+  ]
 }
