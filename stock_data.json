@@ -46,6 +46,27 @@
       "screener_link": "https://www.screener.in/company/SAILIFE/consolidated/",
       "view_weblink": "https://ipo-pulse-insights.lovable.app/company/pw5MKIPzkozZiXNmrTDa",
       "is_ipo": true
+    },
+    {
+      "id": "0565e455-cade-4f2a-a148-3f4bc98e9712",
+      "name": "Tech Mahindra Ltd",
+      "ticker": "TECHM.NS",
+      "sector": "IT & Tech",
+      "buy_price": 0.0,
+      "shares": 0,
+      "purchase_date": "2025-04-26",
+      "hx_cat": true,
+      "total_invested": 0.0,
+      "profit_until_now": 0.0,
+      "loss_until_now": 0.0,
+      "listing_price": 0.0,
+      "issue_price": 0.0,
+      "issue_size": 0,
+      "listed_date": "",
+      "grow_link": "",
+      "screener_link": "https://www.screener.in/company/TECHM/consolidated/",
+      "view_weblink": "https://stocksector-insights.lovable.app/company/cEv9dFw2yUGMq3bRpqzP",
+      "is_ipo": false
     }
   ],
   "transactions": [
