@@ -11,6 +11,7 @@ from components.journal_ledger import journal_ledger
 from components.edit_company import edit_company_form
 from components.portfolio_dashboard import portfolio_dashboard
 from components.track_ipo import track_ipo
+from components.search_view import search_view
 from components.utils import load_data
 from components.styles import apply_styles
 
@@ -84,6 +85,12 @@ if 'edit_mode' not in st.session_state:
 if 'view_company_details' not in st.session_state:
     st.session_state.view_company_details = None
 
+if 'search_active' not in st.session_state:
+    st.session_state.search_active = False
+
+if 'search_query' not in st.session_state:
+    st.session_state.search_query = ""
+
 # Helper functions to toggle UI states
 def toggle_add_sector():
     st.session_state.add_sector_clicked = not st.session_state.add_sector_clicked
@@ -100,6 +107,7 @@ def toggle_add_sector():
     st.session_state.filter_combined_caps = False
     st.session_state.edit_company = None
     st.session_state.edit_mode = False
+    st.session_state.search_active = False
 
 def toggle_add_company():
     st.session_state.add_company_clicked = not st.session_state.add_company_clicked
@@ -116,6 +124,7 @@ def toggle_add_company():
     st.session_state.filter_combined_caps = False
     st.session_state.edit_company = None
     st.session_state.edit_mode = False
+    st.session_state.search_active = False
 
 def toggle_add_ipo():
     st.session_state.add_ipo_clicked = not st.session_state.add_ipo_clicked
@@ -132,6 +141,7 @@ def toggle_add_ipo():
     st.session_state.filter_combined_caps = False
     st.session_state.edit_company = None
     st.session_state.edit_mode = False
+    st.session_state.search_active = False
 
 def toggle_view_mode():
     st.session_state.view_mode = not st.session_state.view_mode
@@ -148,6 +158,7 @@ def toggle_view_mode():
     st.session_state.filter_combined_caps = False
     st.session_state.edit_company = None
     st.session_state.edit_mode = False
+    st.session_state.search_active = False
     if st.session_state.view_mode:
         st.session_state.selected_sector_for_view = None
 
@@ -166,6 +177,7 @@ def toggle_high_return():
     st.session_state.filter_combined_caps = False
     st.session_state.edit_company = None
     st.session_state.edit_mode = False
+    st.session_state.search_active = False
     if st.session_state.show_high_return:
         st.session_state.high_return_sector = "All Sectors"
 
@@ -184,6 +196,7 @@ def toggle_hx_cat():
     st.session_state.filter_combined_caps = False
     st.session_state.edit_company = None
     st.session_state.edit_mode = False
+    st.session_state.search_active = False
 
 def toggle_invest_companies():
     st.session_state.show_invest_companies = not st.session_state.show_invest_companies
@@ -200,6 +213,7 @@ def toggle_invest_companies():
     st.session_state.filter_combined_caps = False
     st.session_state.edit_company = None
     st.session_state.edit_mode = False
+    st.session_state.search_active = False
     if st.session_state.show_invest_companies:
         st.session_state.invest_companies_sector = "All Sectors"
 
@@ -218,6 +232,7 @@ def toggle_visualize_companies():
     st.session_state.filter_combined_caps = False
     st.session_state.edit_company = None
     st.session_state.edit_mode = False
+    st.session_state.search_active = False
     if st.session_state.show_visualize_companies:
         st.session_state.visualize_sector = "All Sectors"
 
@@ -236,6 +251,7 @@ def toggle_journal_ledger():
     st.session_state.filter_combined_caps = False
     st.session_state.edit_company = None
     st.session_state.edit_mode = False
+    st.session_state.search_active = False
 
 def toggle_track_ipo():
     st.session_state.show_track_ipo = not st.session_state.show_track_ipo
@@ -252,6 +268,26 @@ def toggle_track_ipo():
     st.session_state.filter_combined_caps = False
     st.session_state.edit_company = None
     st.session_state.edit_mode = False
+    st.session_state.search_active = False
+
+def toggle_search():
+    st.session_state.search_active = not st.session_state.search_active
+    st.session_state.add_sector_clicked = False
+    st.session_state.add_company_clicked = False
+    st.session_state.add_ipo_clicked = False
+    st.session_state.view_mode = False
+    st.session_state.show_high_return = False
+    st.session_state.show_hx_cat = False
+    st.session_state.show_invest_companies = False
+    st.session_state.show_visualize_companies = False
+    st.session_state.show_journal_ledger = False
+    st.session_state.show_track_ipo = False
+    st.session_state.filter_cap_wise = False
+    st.session_state.filter_combined_caps = False
+    st.session_state.edit_company = None
+    st.session_state.edit_mode = False
+    if not st.session_state.search_active:
+        st.session_state.search_query = ""
 
 def go_to_home():
     st.session_state.add_sector_clicked = False
@@ -269,6 +305,8 @@ def go_to_home():
     st.session_state.selected_sector_for_view = None
     st.session_state.edit_company = None
     st.session_state.edit_mode = False
+    st.session_state.search_active = False
+    st.session_state.search_query = ""
     st.rerun()
 
 # Header with images and title in a single line
@@ -281,6 +319,18 @@ with col3:
     st.markdown("<h1 style='text-align: center; color: #043bb3; margin: 0; line-height: 100px;'>Stocks-Price-Tracker-Analysis</h1>", unsafe_allow_html=True)
 with col4:
     st.image("assets/bear.png", width=200)
+
+# Search bar and button
+st.markdown("### Search Companies")
+col_search, col_button = st.columns([4, 1])
+with col_search:
+    search_query = st.text_input("Enter company name (e.g., Anant)", key="search_input")
+with col_button:
+    if st.button("Search Companies", key="search_companies_button"):
+        st.session_state.search_query = search_query.strip()
+        st.session_state.search_active = True
+        st.rerun()
+st.markdown("---")
 
 # Action buttons
 st.markdown("### Actions")
@@ -333,7 +383,9 @@ with col11:
 st.markdown("---")
 
 # Render components based on session state
-if st.session_state.add_sector_clicked:
+if st.session_state.search_active:
+    search_view()
+elif st.session_state.add_sector_clicked:
     add_sector_form()
 elif st.session_state.add_company_clicked:
     add_company_form()
