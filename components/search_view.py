@@ -1,8 +1,11 @@
 import streamlit as st
+import yfinance as yf
+import plotly.graph_objects as go
 from datetime import datetime, timedelta
 from components.utils import get_current_stock_price, get_today_return, calculate_profit_loss
 
 def search_view():
+    """Display company search results, details, and components (e.g., line chart) triggered by specific buttons."""
     st.header("Search Companies")
 
     # Get search query from session state
@@ -104,7 +107,141 @@ def search_view():
 
             if st.button("Back to Search Results"):
                 st.session_state.view_company_details = None
+                st.session_state.active_component = None  # Reset when going back
                 st.rerun()
+
+            # Initialize active_component if not set
+            if "active_component" not in st.session_state:
+                st.session_state.active_component = None
+
+            # Buttons to toggle components
+            col1, col2 = st.columns(2)
+            with col1:
+                if st.button("Graphical View", key=f"graphical_view_{company['ticker']}"):
+                    st.session_state.active_component = "graphical_view"
+                    st.rerun()
+            with col2:
+                if st.button("Financial Metrics", key=f"financial_metrics_{company['ticker']}"):
+                    st.session_state.active_component = "financial_metrics"
+                    st.rerun()
+
+            # Display components based on active_component
+            if st.session_state.active_component:
+                st.markdown('<div class="component-container">', unsafe_allow_html=True)
+                
+                # Graphical View: Line chart component
+                if st.session_state.active_component == "graphical_view":
+                    st.subheader(f"Stock Price History for {company['name']} (Daily)")
+                    
+                    # Time period filter
+                    time_period = st.selectbox(
+                        "Select Time Period",
+                        options=["1 Year", "3 Years", "5 Years"],
+                        index=0,  # Default to 1 Year
+                        key=f"time_period_{company['ticker']}"
+                    )
+                    
+                    try:
+                        # Fetch stock data
+                        ticker = company["ticker"]
+                        stock = yf.Ticker(ticker)
+                        end_date = datetime.now()
+                        listed_date_str = company.get('listed_date', '')
+                        
+                        # Map time period to days and yfinance period
+                        period_map = {
+                            "1 Year": {"days": 365, "period": "1y"},
+                            "3 Years": {"days": 3 * 365, "period": "3y"},
+                            "5 Years": {"days": 5 * 365, "period": "5y"}
+                        }
+                        selected_days = period_map[time_period]["days"]
+                        yf_period = period_map[time_period]["period"]
+                        
+                        # Determine start date: use listing date if available and within selected period
+                        if listed_date_str and listed_date_str != 'N/A':
+                            try:
+                                listed_date = datetime.strptime(listed_date_str, "%Y-%m-%d")
+                                days_since_listing = (end_date - listed_date).days
+                                if days_since_listing < selected_days:
+                                    start_date = listed_date
+                                else:
+                                    start_date = end_date - timedelta(days=selected_days)
+                            except ValueError:
+                                start_date = end_date - timedelta(days=selected_days)
+                        else:
+                            start_date = end_date - timedelta(days=selected_days)
+                        
+                        # Fetch daily stock data
+                        data = stock.history(start=start_date, end=end_date, interval="1d")
+                        
+                        if data.empty:
+                            st.warning(f"No stock price data available for {ticker}. The company may not have sufficient historical data.")
+                        else:
+                            # Determine price column: prefer 'Adj Close', fallback to 'Close'
+                            price_column = 'Adj Close' if 'Adj Close' in data.columns else 'Close'
+                            if price_column not in data.columns:
+                                st.error(f"No valid price data ('Adj Close' or 'Close') available for {ticker}.")
+                            else:
+                                # Create line chart
+                                fig = go.Figure()
+                                fig.add_trace(
+                                    go.Scatter(
+                                        x=data.index,
+                                        y=data[price_column],
+                                        mode='lines',
+                                        name=price_column,
+                                        line=dict(color='#1e90ff', width=2)
+                                    )
+                                )
+                                
+                                # Customize layout
+                                chart_title = f"{ticker} Stock Price (since {start_date.strftime('%Y-%m-%d')})" if start_date > end_date - timedelta(days=selected_days) else f"{ticker} {time_period} Stock Price"
+                                fig.update_layout(
+                                    title={
+                                        'text': chart_title,
+                                        'y': 0.9,
+                                        'x': 0.5,
+                                        'xanchor': 'center',
+                                        'yanchor': 'top',
+                                        'font': dict(family='Georgia', size=20, color='#f0f4f8')
+                                    },
+                                    xaxis=dict(
+                                        title='Date',
+                                        titlefont=dict(family='Lato', size=14, color='#f0f4f8'),
+                                        tickfont=dict(family='Lato', size=12, color='#f0f4f8'),
+                                        gridcolor='rgba(240, 244, 248, 0.2)',
+                                        tickformat='%Y-%m-%d',
+                                        showgrid=True
+                                    ),
+                                    yaxis=dict(
+                                        title=f'{price_column} Price ({currency_symbol})',
+                                        titlefont=dict(family='Lato', size=14, color='#f0f4f8'),
+                                        tickfont=dict(family='Lato', size=12, color='#f0f4f8'),
+                                        gridcolor='rgba(240, 244, 248, 0.2)',
+                                        showgrid=True
+                                    ),
+                                    plot_bgcolor='#0a0a0a',
+                                    paper_bgcolor='rgba(10, 10, 10, 0.95)',
+                                    showlegend=False,
+                                    margin=dict(l=50, r=50, t=80, b=50),
+                                    height=400
+                                )
+                                
+                                # Display chart
+                                st.plotly_chart(fig, use_container_width=True)
+                        
+                    except Exception as e:
+                        st.error(f"Error fetching stock price data for {ticker}: {str(e)}. Please check the ticker or try again later.")
+                
+                # Placeholder for future component (e.g., Financial Metrics)
+                elif st.session_state.active_component == "financial_metrics":
+                    st.subheader(f"Financial Metrics for {company['name']}")
+                    st.write("Placeholder for financial metrics component (to be implemented).")
+                    # Add future component logic here, e.g.:
+                    # st.write("Display financial data, tables, or charts")
+                
+                st.markdown('</div>', unsafe_allow_html=True)
+            
             st.markdown('</div>', unsafe_allow_html=True)
     else:
         # Display matching companies
@@ -125,6 +262,7 @@ def search_view():
             with cols[0]:
                 if st.button(company["name"], key=f"view_{company['id']}"):
                     st.session_state.view_company_details = company["id"]
+                    st.session_state.active_component = None  # Reset when selecting a new company
                     st.rerun()
             with cols[1]:
                 st.markdown(f'<div class="table-cell">{company["sector"]}</div>', unsafe_allow_html=True)
