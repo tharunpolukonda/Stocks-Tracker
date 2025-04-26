@@ -310,7 +310,7 @@ def go_to_home():
     st.rerun()
 
 # Header with images and title in a single line
-col1, col2, col3, col4 = st.columns([1, 1, 4, 1])
+col1, col2, col3, col4 = st.columns([1, 1, 5, 1])
 with col1:
     st.image("assets/bull.png", width=200)
 with col2:
