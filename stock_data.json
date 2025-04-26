@@ -24,6 +24,28 @@
       "screener_link": "https://www.screener.in/company/ZAGGLE/",
       "view_weblink": "https://stocksector-insights.lovable.app/company/zRHuTgr6PK4kV2BYEWWd",
       "is_ipo": false
+    },
+    {
+      "id": "e5147d09-d858-47ab-9be0-c2434f425835",
+      "name": "Sai Life Sciences Ltd",
+      "ticker": "SAILIFE.NS",
+      "sector": "Pharma",
+      "buy_price": 0.0,
+      "shares": 0,
+      "purchase_date": "2025-04-26",
+      "hx_cat": true,
+      "total_invested": 0.0,
+      "profit_until_now": 0.0,
+      "loss_until_now": 0.0,
+      "listing_price": 650.0,
+      "issue_price": 549.0,
+      "issue_size": 3042,
+      "listed_date": "2024-12-18",
+      "grow_link": "https://groww.in/ipo/sai-life-sciences-ipo",
+      "subscription_rate": 4,
+      "screener_link": "https://www.screener.in/company/SAILIFE/consolidated/",
+      "view_weblink": "https://ipo-pulse-insights.lovable.app/company/pw5MKIPzkozZiXNmrTDa",
+      "is_ipo": true
     }
   ],
   "transactions": [
