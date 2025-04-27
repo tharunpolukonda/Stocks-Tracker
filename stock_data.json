@@ -466,6 +466,27 @@
       "screener_link": "https://www.screener.in/company/APLLTD/consolidated/",
       "view_weblink": "https://stocksector-insights.lovable.app/company/jazdGPj2Nr61WhcgR0vj",
       "is_ipo": false
+    },
+    {
+      "id": "a34444b5-f84c-4c6c-80d6-9c70725b0e9a",
+      "name": "Laurus Labs Ltd",
+      "ticker": "LAURUSLABS.NS",
+      "sector": "Pharma",
+      "buy_price": 0.0,
+      "shares": 0,
+      "purchase_date": "2025-04-27",
+      "hx_cat": false,
+      "total_invested": 0.0,
+      "profit_until_now": 0.0,
+      "loss_until_now": 0.0,
+      "listing_price": 0.0,
+      "issue_price": 0.0,
+      "issue_size": 0,
+      "listed_date": "",
+      "grow_link": "",
+      "screener_link": "https://www.screener.in/company/LAURUSLABS/consolidated/",
+      "view_weblink": "https://stocksector-insights.lovable.app/company/PavcuVU96VxJFsouWurG",
+      "is_ipo": false
     }
   ],
   "transactions": [
