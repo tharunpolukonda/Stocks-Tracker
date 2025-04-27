@@ -172,6 +172,27 @@
       "screener_link": "https://www.screener.in/company/REDINGTON/consolidated/",
       "view_weblink": "https://stocksector-insights.lovable.app/company/05JA4F4o8Zpw9124I0Th",
       "is_ipo": false
+    },
+    {
+      "id": "61f3d613-07cb-4885-99fd-2359bca94253",
+      "name": "Firstsource Solutions Ltd",
+      "ticker": "FSL.NS",
+      "sector": "IT & Tech",
+      "buy_price": 0.0,
+      "shares": 0,
+      "purchase_date": "2025-04-27",
+      "hx_cat": false,
+      "total_invested": 0.0,
+      "profit_until_now": 0.0,
+      "loss_until_now": 0.0,
+      "listing_price": 0.0,
+      "issue_price": 0.0,
+      "issue_size": 0,
+      "listed_date": "",
+      "grow_link": "",
+      "screener_link": "https://www.screener.in/company/FSL/consolidated/",
+      "view_weblink": "https://stocksector-insights.lovable.app/company/kLDcsIwPhXeusQQT3qH2",
+      "is_ipo": false
     }
   ],
   "transactions": [
