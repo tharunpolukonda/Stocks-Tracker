@@ -130,6 +130,27 @@
       "screener_link": "https://www.screener.in/company/KPITTECH/consolidated/",
       "view_weblink": "https://stocksector-insights.lovable.app/company/Oknf1XbzGOcCfd9GVCAW",
       "is_ipo": false
+    },
+    {
+      "id": "0e479666-8e31-44e3-bbf9-a5cb9be807c8",
+      "name": "Affle India Ltd",
+      "ticker": "AFFLE.NS",
+      "sector": "IT & Tech",
+      "buy_price": 0.0,
+      "shares": 0,
+      "purchase_date": "2025-04-27",
+      "hx_cat": false,
+      "total_invested": 0.0,
+      "profit_until_now": 0.0,
+      "loss_until_now": 0.0,
+      "listing_price": 0.0,
+      "issue_price": 0.0,
+      "issue_size": 0,
+      "listed_date": "",
+      "grow_link": "",
+      "screener_link": "https://www.screener.in/company/AFFLE/consolidated/",
+      "view_weblink": "https://stocksector-insights.lovable.app/company/ZVi7ks39rUMi7UEJsD6A",
+      "is_ipo": false
     }
   ],
   "transactions": [
