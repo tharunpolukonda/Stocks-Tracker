@@ -298,6 +298,27 @@
       "screener_link": "https://www.screener.in/company/AKUMS/consolidated/",
       "view_weblink": "https://stocksector-insights.lovable.app/company/IjKkgqgYIVNaPI16pXQl",
       "is_ipo": false
+    },
+    {
+      "id": "da621c84-d767-4960-9bf2-c353c234e3fa",
+      "name": "Aurobindo Pharma Ltd",
+      "ticker": "AUROPHARMA.NS",
+      "sector": "IT & Tech",
+      "buy_price": 0.0,
+      "shares": 0,
+      "purchase_date": "2025-04-27",
+      "hx_cat": false,
+      "total_invested": 0.0,
+      "profit_until_now": 0.0,
+      "loss_until_now": 0.0,
+      "listing_price": 0.0,
+      "issue_price": 0.0,
+      "issue_size": 0,
+      "listed_date": "",
+      "grow_link": "",
+      "screener_link": "https://www.screener.in/company/AUROPHARMA/consolidated/",
+      "view_weblink": "https://stocksector-insights.lovable.app/company/hme0Bfya1CXaEafZbZ1E",
+      "is_ipo": false
     }
   ],
   "transactions": [
