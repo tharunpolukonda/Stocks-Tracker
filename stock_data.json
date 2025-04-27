@@ -340,6 +340,27 @@
       "screener_link": "https://www.screener.in/company/LUPIN/consolidated/",
       "view_weblink": "https://stocksector-insights.lovable.app/company/8Hva41DeueH4m1WJwcIK",
       "is_ipo": false
+    },
+    {
+      "id": "451ecb90-b355-4d7f-9943-9c8ddc923841",
+      "name": "Blue Jet Healthcare Ltd",
+      "ticker": "BLUEJET.NS",
+      "sector": "Pharma",
+      "buy_price": 0.0,
+      "shares": 0,
+      "purchase_date": "2025-04-27",
+      "hx_cat": false,
+      "total_invested": 0.0,
+      "profit_until_now": 0.0,
+      "loss_until_now": 0.0,
+      "listing_price": 0.0,
+      "issue_price": 0.0,
+      "issue_size": 0,
+      "listed_date": "",
+      "grow_link": "",
+      "screener_link": "https://www.screener.in/company/BLUEJET/",
+      "view_weblink": "https://stocksector-insights.lovable.app/company/DahgyPMHO04a3A3cyBsh",
+      "is_ipo": false
     }
   ],
   "transactions": [
