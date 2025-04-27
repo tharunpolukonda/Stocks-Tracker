@@ -487,6 +487,27 @@
       "screener_link": "https://www.screener.in/company/LAURUSLABS/consolidated/",
       "view_weblink": "https://stocksector-insights.lovable.app/company/PavcuVU96VxJFsouWurG",
       "is_ipo": false
+    },
+    {
+      "id": "e5e7c8bb-66c2-4da6-ad4f-d8e8d7013adf",
+      "name": "Dr Reddys Laboratories Ltd",
+      "ticker": "DRREDDY.NS",
+      "sector": "Pharma",
+      "buy_price": 0.0,
+      "shares": 0,
+      "purchase_date": "2025-04-27",
+      "hx_cat": false,
+      "total_invested": 0.0,
+      "profit_until_now": 0.0,
+      "loss_until_now": 0.0,
+      "listing_price": 0.0,
+      "issue_price": 0.0,
+      "issue_size": 0,
+      "listed_date": "",
+      "grow_link": "",
+      "screener_link": "https://www.screener.in/company/DRREDDY/consolidated/",
+      "view_weblink": "https://stocksector-insights.lovable.app/company/FwqIaq4XFxBT9vV8Mm8J",
+      "is_ipo": false
     }
   ],
   "transactions": [
