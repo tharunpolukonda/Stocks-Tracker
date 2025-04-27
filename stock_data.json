@@ -235,6 +235,27 @@
       "screener_link": "https://www.screener.in/company/NAUKRI/consolidated/",
       "view_weblink": "https://stocksector-insights.lovable.app/company/fJLl92qGXxj3AhaHUeKU",
       "is_ipo": false
+    },
+    {
+      "id": "be566025-3c9c-45eb-a217-69a9de37e148",
+      "name": "Senores Pharmaceuticals Ltd",
+      "ticker": "SENORES.NS",
+      "sector": "Pharma",
+      "buy_price": 0.0,
+      "shares": 0,
+      "purchase_date": "2025-04-27",
+      "hx_cat": true,
+      "total_invested": 0.0,
+      "profit_until_now": 0.0,
+      "loss_until_now": 0.0,
+      "listing_price": 0.0,
+      "issue_price": 0.0,
+      "issue_size": 0,
+      "listed_date": "",
+      "grow_link": "",
+      "screener_link": "https://www.screener.in/company/SENORES/consolidated/",
+      "view_weblink": "https://stocksector-insights.lovable.app/company/sH1kMxPALy8xAEIj2DC2",
+      "is_ipo": false
     }
   ],
   "transactions": [
