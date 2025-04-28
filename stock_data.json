@@ -529,6 +529,27 @@
       "screener_link": "https://www.screener.in/company/SYNGENE/consolidated/",
       "view_weblink": "https://stocksector-insights.lovable.app/company/IjTe9a7nT5cmCQvd5T2J",
       "is_ipo": false
+    },
+    {
+      "id": "b13dc9c8-915e-4002-bd5c-96f537e7f5ad",
+      "name": "Sonata Software Ltd",
+      "ticker": "SONATSOFTW.NS",
+      "sector": "IT & Tech",
+      "buy_price": 0.0,
+      "shares": 0,
+      "purchase_date": "2025-04-28",
+      "hx_cat": false,
+      "total_invested": 0.0,
+      "profit_until_now": 0.0,
+      "loss_until_now": 0.0,
+      "listing_price": 0.0,
+      "issue_price": 0.0,
+      "issue_size": 0,
+      "listed_date": "",
+      "grow_link": "",
+      "screener_link": "https://www.screener.in/company/SONATSOFTW/consolidated/",
+      "view_weblink": "https://stocksector-insights.lovable.app/company/l1WJqzwKXaPrjKar2FJT",
+      "is_ipo": false
     }
   ],
   "transactions": [
