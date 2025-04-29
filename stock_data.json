@@ -592,6 +592,27 @@
       "screener_link": "https://www.screener.in/company/IOLCP/",
       "view_weblink": "https://stocksector-insights.lovable.app/company/lE2D59DqDrRDa2Z1ehYx",
       "is_ipo": false
+    },
+    {
+      "id": "9ad08e42-afb6-4969-b083-1c9b82680acc",
+      "name": "Tata Technologies Ltd",
+      "ticker": "TATATECH.NS",
+      "sector": "IT & Tech",
+      "buy_price": 0.0,
+      "shares": 0,
+      "purchase_date": "2025-04-29",
+      "hx_cat": false,
+      "total_invested": 0.0,
+      "profit_until_now": 0.0,
+      "loss_until_now": 0.0,
+      "listing_price": 0.0,
+      "issue_price": 0.0,
+      "issue_size": 0,
+      "listed_date": "",
+      "grow_link": "",
+      "screener_link": "https://www.screener.in/company/TATATECH/consolidated/",
+      "view_weblink": "https://stocksector-insights.lovable.app/company/azwxBz6jPyeH5S796Own",
+      "is_ipo": false
     }
   ],
   "transactions": [
