@@ -550,6 +550,27 @@
       "screener_link": "https://www.screener.in/company/SONATSOFTW/consolidated/",
       "view_weblink": "https://stocksector-insights.lovable.app/company/l1WJqzwKXaPrjKar2FJT",
       "is_ipo": false
+    },
+    {
+      "id": "fbb760f7-8a9d-41cb-86db-ced7c2c8a9e8",
+      "name": "Marksans Pharma Ltd",
+      "ticker": "MARKSANS.NS",
+      "sector": "Pharma",
+      "buy_price": 0.0,
+      "shares": 0,
+      "purchase_date": "2025-04-29",
+      "hx_cat": false,
+      "total_invested": 0.0,
+      "profit_until_now": 0.0,
+      "loss_until_now": 0.0,
+      "listing_price": 0.0,
+      "issue_price": 0.0,
+      "issue_size": 0,
+      "listed_date": "",
+      "grow_link": "",
+      "screener_link": "https://www.screener.in/company/MARKSANS/consolidated/",
+      "view_weblink": "https://stocksector-insights.lovable.app/company/cHRY5v6RmrGfCETYRGkS",
+      "is_ipo": false
     }
   ],
   "transactions": [
