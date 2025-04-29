@@ -571,6 +571,27 @@
       "screener_link": "https://www.screener.in/company/MARKSANS/consolidated/",
       "view_weblink": "https://stocksector-insights.lovable.app/company/cHRY5v6RmrGfCETYRGkS",
       "is_ipo": false
+    },
+    {
+      "id": "387b588f-e01c-4ae7-b32c-ab2d75574a65",
+      "name": "IOL Chemicals & Pharmaceuticals Ltd",
+      "ticker": "IOLCP.NS",
+      "sector": "Pharma",
+      "buy_price": 0.0,
+      "shares": 0,
+      "purchase_date": "2025-04-29",
+      "hx_cat": false,
+      "total_invested": 0.0,
+      "profit_until_now": 0.0,
+      "loss_until_now": 0.0,
+      "listing_price": 0.0,
+      "issue_price": 0.0,
+      "issue_size": 0,
+      "listed_date": "",
+      "grow_link": "",
+      "screener_link": "https://www.screener.in/company/IOLCP/",
+      "view_weblink": "https://stocksector-insights.lovable.app/company/lE2D59DqDrRDa2Z1ehYx",
+      "is_ipo": false
     }
   ],
   "transactions": [
